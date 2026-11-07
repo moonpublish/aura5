@@ -1,0 +1,3259 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aura Health - Futuristic Medical & Community Hub</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              royal: '#2B47FC',
+              violet: '#4F46E5',
+              deep: '#1E1B4B',
+              neon: '#A3E635',
+              neonHover: '#84CC16',
+              neonLight: '#D9F99D'
+            }
+          },
+          fontFamily: {
+            sans: ['Prompt', 'Inter', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  
+  <!-- Google Fonts: Prompt & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Prompt:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- React 18 Production & Babel -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    body {
+      font-family: 'Prompt', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fadeIn {
+      animation: fadeIn 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    .glass-card-dark {
+      background: rgba(30, 27, 75, 0.65);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+    .glass-card-light {
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(203, 213, 225, 0.9);
+      box-shadow: 0 10px 30px -10px rgba(15, 23, 42, 0.08);
+    }
+    .glass-pill-dark {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+    .glass-pill-light {
+      background: rgba(241, 245, 249, 0.95);
+      border: 1px solid rgba(203, 213, 225, 0.8);
+    }
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #818cf855;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #818cf8aa;
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-[#1E1B4B] via-[#0F172A] to-[#1E1B4B] text-slate-100 antialiased selection:bg-lime-400 selection:text-slate-950 transition-colors duration-300">
+  <div id="root">
+    <div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; background: #0f172a; color: #a3e635; font-family: sans-serif; font-size: 14px;">
+      <div style="text-align: center;">
+        <div style="width: 36px; height: 36px; border: 3px solid #a3e635; border-top-color: transparent; border-radius: 50%; margin: 0 auto 14px auto; animation: spin 0.8s linear infinite;"></div>
+        <div style="font-weight: 600; letter-spacing: 0.5px;">Aura Health กำลังเปิดระบบ...</div>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    // --- High-Performance Inline SVG Icons ---
+    const Icon = ({ name, className = "w-5 h-5", ...props }) => {
+      const icons = {
+        activity: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.2} {...props}><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>,
+        droplets: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}><path d="M7 16.3c2.2 0 4-1.83 4-4.05 0-1.16-.57-2.26-1.71-3.19S7.29 6.75 7 5c-.29 1.75-1.14 3.12-2.29 4.06S3 11.09 3 12.25c0 2.22 1.8 4.05 4 4.05z"/><path d="M12.56 6.6A10.97 10.97 0 0 0 14 3.02c.5 2.5 2 4.9 4 6.5s3 3.5 3 5.5a6.98 6.98 0 0 1-11.91 4.97"/></svg>,
+        flame: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>,
+        pill: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><path d="m8.5 8.5 7 7"/></svg>,
+        camera: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>,
+        heart: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>,
+        users: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>,
+        userCheck: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><polyline points="16 11 18 13 22 9"/></svg>,
+        calendar: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>,
+        mapPin: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>,
+        check: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.8} {...props}><polyline points="20 6 9 17 4 12"/></svg>,
+        checkCircle: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>,
+        xCircle: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>,
+        clock: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>,
+        shoppingBag: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>,
+        shieldCheck: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="m9 12 2 2 4-4"/></svg>,
+        plus: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} {...props}><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>,
+        chevronRight: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} {...props}><polyline points="9 18 15 12 9 6"/></svg>,
+        chevronLeft: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} {...props}><polyline points="15 18 9 12 15 6"/></svg>,
+        arrowUpRight: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} {...props}><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>,
+        play: <svg className={className} fill="currentColor" viewBox="0 0 24 24" {...props}><polygon points="5 3 19 12 5 21 5 3"/></svg>,
+        send: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>,
+        sparkles: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>,
+        alertTriangle: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>,
+        zap: <svg className={className} fill="currentColor" viewBox="0 0 24 24" {...props}><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>,
+        barChart2: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>,
+        award: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>,
+        sun: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>,
+        moon: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>,
+        bell: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>,
+        testTube: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}><path d="M14.5 2v17.5c0 1.4-1.1 2.5-2.5 2.5h0c-1.4 0-2.5-1.1-2.5-2.5V2"/><path d="M8.5 2h7"/><path d="M14.5 16h-5"/></svg>,
+        stopwatch: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}><circle cx="12" cy="14" r="8"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="14" x2="15" y2="11"/></svg>,
+        x: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} {...props}><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>,
+        // Dedicated sport icons
+        badminton: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}><circle cx="8" cy="8" r="5"/><path d="m11.5 11.5 8.5 8.5"/><path d="m16 20 4-4"/><path d="M4 14c2.5 2.5 6 3 7.5 1.5l3-3"/><path d="M14 4c2.5 2.5 3 6 1.5 7.5l-3 3"/></svg>,
+        running: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}><circle cx="15" cy="4" r="2"/><path d="M6 18l4-3 2 1.5 2-4.5-3-2 1-3 4 2"/><path d="M8 22l3-5"/><path d="M16 14l2 4 4 1"/></svg>,
+        dumbbell: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}><path d="M6.5 6.5h11"/><path d="M6 4v16"/><path d="M3 7v10"/><path d="M18 4v16"/><path d="M21 7v10"/></svg>,
+        yoga: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}><circle cx="12" cy="4" r="2"/><path d="M4 17l4-2 4 3 4-3 4 2"/><path d="M12 9v5"/><path d="M7 11l5-2 5 2"/></svg>
+      };
+      return icons[name] || <span className={className}>•</span>;
+    };
+
+    // --- Static Constants Cached Outside Components for High Performance ---
+    const STATIC_VENUES = {
+      badminton: {
+        bkk: [
+          { id: 'b1', name: 'Winner Sports Avenue (รัชดา)', type: 'private', baseCost: 260, open: '08:00 - 24:00', loc: 'รัชดาภิเษก, กทม.', image: 'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?auto=format&fit=crop&q=80&w=500' },
+          { id: 'b2', name: '71 Sports Club (เอกมัย-รามอินทรา)', type: 'private', baseCost: 280, open: '09:00 - 24:00', loc: 'ลาดพร้าว, กทม.', image: 'https://images.unsplash.com/photo-1544919982-b61976f0ba43?auto=format&fit=crop&q=80&w=500' },
+          { id: 'b3', name: 'B-Pro Lasalle คอร์ทแบดมาตรฐานสากล', type: 'private', baseCost: 250, open: '07:00 - 24:00', loc: 'บางนา, กทม.', image: 'https://images.unsplash.com/photo-1613918431703-aa503fce5e82?auto=format&fit=crop&q=80&w=500' },
+          { id: 'b4', name: 'ศูนย์กีฬาเฉลิมพระเกียรติฯ 84 พรรษา (บางบอน)', type: 'public', baseCost: 0, open: '06:00 - 20:00', loc: 'บางบอน, กทม.', image: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&q=80&w=500' },
+          { id: 'b5', name: 'สนามแบดมินตันอินดอร์ รัชดา 36', type: 'private', baseCost: 240, open: '10:00 - 24:00', loc: 'จตุจักร, กทม.', image: 'https://images.unsplash.com/photo-1521537634581-0dced2fed2a8?auto=format&fit=crop&q=80&w=500' },
+          { id: 'b6', name: 'S-29 แบดมินตันคลับ นนทบุรี', type: 'private', baseCost: 250, open: '08:00 - 24:00', loc: 'นนทบุรี', image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&q=80&w=500' },
+          { id: 'b7', name: 'Grand Badminton คลองหลวง', type: 'private', baseCost: 220, open: '09:00 - 24:00', loc: 'ปทุมธานี', image: 'https://images.unsplash.com/photo-1517649763962-0c623266ddc0?auto=format&fit=crop&q=80&w=500' },
+          { id: 'b8', name: 'Pro-Am Badminton รามคำแหง', type: 'private', baseCost: 250, open: '10:00 - 24:00', loc: 'รามคำแหง, กทม.', image: 'https://images.unsplash.com/photo-1519766304817-4f37bda74a29?auto=format&fit=crop&q=80&w=500' },
+          { id: 'b9', name: 'ศูนย์กีฬาประชานิเวศน์', type: 'public', baseCost: 0, open: '06:00 - 21:00', loc: 'จตุจักร, กทม.', image: 'https://images.unsplash.com/photo-1546519638-68e109498ffc?auto=format&fit=crop&q=80&w=500' },
+          { id: 'b10', name: 'PB Sports Complex สมุทรปราการ', type: 'private', baseCost: 230, open: '08:00 - 23:00', loc: 'สมุทรปราการ', image: 'https://images.unsplash.com/photo-1530549387789-4c1017266635?auto=format&fit=crop&q=80&w=500' }
+        ],
+        chonburi: [
+          { id: 'cb1', name: 'Tassana Garden Badminton ชลบุรี', type: 'private', baseCost: 220, open: '08:00 - 23:00', loc: 'เมืองชลบุรี', image: 'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?auto=format&fit=crop&q=80&w=500' },
+          { id: 'cb2', name: 'Chonburi Arena Sports Club', type: 'private', baseCost: 240, open: '09:00 - 24:00', loc: 'บางแสน, ชลบุรี', image: 'https://images.unsplash.com/photo-1544919982-b61976f0ba43?auto=format&fit=crop&q=80&w=500' },
+          { id: 'cb3', name: 'สนามแบดมินตันเทศบาลเมืองแสนสุข', type: 'public', baseCost: 0, open: '06:00 - 21:00', loc: 'บางแสน, ชลบุรี', image: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&q=80&w=500' },
+          { id: 'cb4', name: 'Pattaya Badminton Club (พัทยาเหนือ)', type: 'private', baseCost: 260, open: '09:00 - 24:00', loc: 'พัทยาเหนือ', image: 'https://images.unsplash.com/photo-1613918431703-aa503fce5e82?auto=format&fit=crop&q=80&w=500' },
+          { id: 'cb5', name: 'Sriracha Arena Sport Park', type: 'private', baseCost: 230, open: '08:00 - 23:00', loc: 'ศรีราชา', image: 'https://images.unsplash.com/photo-1521537634581-0dced2fed2a8?auto=format&fit=crop&q=80&w=500' },
+          { id: 'cb6', name: 'ศูนย์เยาวชนพัทยาใต้', type: 'public', baseCost: 0, open: '06:00 - 20:00', loc: 'พัทยาใต้', image: 'https://images.unsplash.com/photo-1546519638-68e109498ffc?auto=format&fit=crop&q=80&w=500' },
+          { id: 'cb7', name: 'JP Badminton House บ้านบึง', type: 'private', baseCost: 200, open: '10:00 - 22:00', loc: 'บ้านบึง, ชลบุรี', image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&q=80&w=500' },
+          { id: 'cb8', name: 'Laem Chabang Badminton Stadium', type: 'private', baseCost: 220, open: '09:00 - 23:00', loc: 'แหลมฉบัง', image: 'https://images.unsplash.com/photo-1517649763962-0c623266ddc0?auto=format&fit=crop&q=80&w=500' },
+          { id: 'cb9', name: 'Sattahip Navy Sports Hall', type: 'public', baseCost: 0, open: '06:00 - 20:00', loc: 'สัตหีบ', image: 'https://images.unsplash.com/photo-1519766304817-4f37bda74a29?auto=format&fit=crop&q=80&w=500' },
+          { id: 'cb10', name: 'Bangsang Badminton Center', type: 'private', baseCost: 210, open: '08:00 - 23:00', loc: 'บางแสน', image: 'https://images.unsplash.com/photo-1530549387789-4c1017266635?auto=format&fit=crop&q=80&w=500' }
+        ],
+        chiangmai: [
+          { id: 'cm1', name: 'C.M. Badminton Stadium (ฟ้าฮ่าม)', type: 'private', baseCost: 220, open: '09:00 - 24:00', loc: 'เมืองเชียงใหม่', image: 'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?auto=format&fit=crop&q=80&w=500' },
+          { id: 'cm2', name: 'Charisma Badminton Club นิมมาน', type: 'private', baseCost: 250, open: '08:00 - 24:00', loc: 'นิมมานฯ, เชียงใหม่', image: 'https://images.unsplash.com/photo-1544919982-b61976f0ba43?auto=format&fit=crop&q=80&w=500' },
+          { id: 'cm3', name: 'สนามกีฬาสมโภชเชียงใหม่ 700 ปี', type: 'public', baseCost: 0, open: '06:00 - 21:00', loc: 'แม่ริม, เชียงใหม่', image: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&q=80&w=500' },
+          { id: 'cm4', name: 'สนามแบดมินตันเทศบาลนครเชียงใหม่', type: 'public', baseCost: 0, open: '06:00 - 20:00', loc: 'ช้างเผือก', image: 'https://images.unsplash.com/photo-1546519638-68e109498ffc?auto=format&fit=crop&q=80&w=500' },
+          { id: 'cm5', name: 'North Sports Badminton สันทราย', type: 'private', baseCost: 210, open: '10:00 - 23:00', loc: 'สันทราย, เชียงใหม่', image: 'https://images.unsplash.com/photo-1613918431703-aa503fce5e82?auto=format&fit=crop&q=80&w=500' },
+          { id: 'cm6', name: 'Apex Badminton Court หางดง', type: 'private', baseCost: 220, open: '08:00 - 23:00', loc: 'หางดง, เชียงใหม่', image: 'https://images.unsplash.com/photo-1521537634581-0dced2fed2a8?auto=format&fit=crop&q=80&w=500' },
+          { id: 'cm7', name: 'Sanpatong Sports Arena', type: 'private', baseCost: 200, open: '09:00 - 22:00', loc: 'สันป่าตอง', image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&q=80&w=500' },
+          { id: 'cm8', name: 'ศูนย์กีฬาเฉลิมพระเกียรติ ม.แม่โจ้', type: 'public', baseCost: 0, open: '06:00 - 20:00', loc: 'แม่โจ้', image: 'https://images.unsplash.com/photo-1517649763962-0c623266ddc0?auto=format&fit=crop&q=80&w=500' },
+          { id: 'cm9', name: 'Lanna Badminton Hall', type: 'private', baseCost: 230, open: '09:00 - 23:00', loc: 'แม่เหียะ, เชียงใหม่', image: 'https://images.unsplash.com/photo-1519766304817-4f37bda74a29?auto=format&fit=crop&q=80&w=500' },
+          { id: 'cm10', name: 'Airport Badminton Club เชียงใหม่', type: 'private', baseCost: 240, open: '08:00 - 24:00', loc: 'ใกล้สนามบิน เชียงใหม่', image: 'https://images.unsplash.com/photo-1530549387789-4c1017266635?auto=format&fit=crop&q=80&w=500' }
+        ]
+      },
+      running: {
+        bkk: [
+          { id: 'r1', name: 'สวนเบญจกิติ (Forest Park)', type: 'public', baseCost: 0, open: '04:30 - 22:00', loc: 'คลองเตย, กทม.', image: 'https://images.unsplash.com/photo-1519331379826-f10be5486c6f?auto=format&fit=crop&q=80&w=500' },
+          { id: 'r2', name: 'สวนลุมพินี (Lumpini Park)', type: 'public', baseCost: 0, open: '04:30 - 22:00', loc: 'ปทุมวัน, กทม.', image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&q=80&w=500' },
+          { id: 'r3', name: 'สวนรถไฟ (สวนวชิรเบญจทัศ)', type: 'public', baseCost: 0, open: '05:00 - 21:00', loc: 'จตุจักร, กทม.', image: 'https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&q=80&w=500' },
+          { id: 'r4', name: 'สวนหลวง ร.๙', type: 'public', baseCost: 0, open: '05:00 - 19:00', loc: 'ประเวศ, กทม.', image: 'https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?auto=format&fit=crop&q=80&w=500' },
+          { id: 'r5', name: 'Sky Lane สุวรรณภูมิ', type: 'public', baseCost: 0, open: '05:30 - 20:30', loc: 'สมุทรปราการ', image: 'https://images.unsplash.com/photo-1530549387789-4c1017266635?auto=format&fit=crop&q=80&w=500' },
+          { id: 'r6', name: 'สวนจตุจักร', type: 'public', baseCost: 0, open: '04:30 - 22:00', loc: 'จตุจักร, กทม.', image: 'https://images.unsplash.com/photo-1502082553048-f009c37129b9?auto=format&fit=crop&q=80&w=500' },
+          { id: 'r7', name: 'สวนสราญรมย์', type: 'public', baseCost: 0, open: '05:00 - 21:00', loc: 'พระนคร, กทม.', image: 'https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?auto=format&fit=crop&q=80&w=500' },
+          { id: 'r8', name: 'ศูนย์กีฬาทางน้ำบึงหนองบอน', type: 'public', baseCost: 0, open: '05:00 - 19:00', loc: 'ประเวศ, กทม.', image: 'https://images.unsplash.com/photo-1498654896293-37aacf113fd9?auto=format&fit=crop&q=80&w=500' },
+          { id: 'r9', name: 'อุทยาน 100 ปี จุฬาฯ', type: 'public', baseCost: 0, open: '05:00 - 22:00', loc: 'สามย่าน, กทม.', image: 'https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?auto=format&fit=crop&q=80&w=500' },
+          { id: 'r10', name: 'สวนสมเด็จพระนางเจ้าสิริกิติ์ฯ', type: 'public', baseCost: 0, open: '05:00 - 20:00', loc: 'จตุจักร, กทม.', image: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&q=80&w=500' }
+        ],
+        chonburi: [
+          { id: 'rc1', name: 'ลู่วิ่งชายหาดบางแสน (Promenade)', type: 'public', baseCost: 0, open: '04:30 - 23:00', loc: 'บางแสน, ชลบุรี', image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&q=80&w=500' },
+          { id: 'rc2', name: 'สะพานเลียบชายทะเลชลบุรี (ชลมารควิถี)', type: 'public', baseCost: 0, open: '05:00 - 22:00', loc: 'เมืองชลบุรี', image: 'https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?auto=format&fit=crop&q=80&w=500' },
+          { id: 'rc3', name: 'อ่างเก็บน้ำบางพระ (สันเขื่อน)', type: 'public', baseCost: 0, open: '05:30 - 18:30', loc: 'ศรีราชา, ชลบุรี', image: 'https://images.unsplash.com/photo-1519331379826-f10be5486c6f?auto=format&fit=crop&q=80&w=500' },
+          { id: 'rc4', name: 'สวนสุขภาพเกาะลอย ศรีราชา', type: 'public', baseCost: 0, open: '05:00 - 21:00', loc: 'ศรีราชา', image: 'https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&q=80&w=500' },
+          { id: 'rc5', name: 'สวนสาธารณะเขาพระตำหนัก พัทยา', type: 'public', baseCost: 0, open: '05:00 - 21:00', loc: 'พัทยาใต้', image: 'https://images.unsplash.com/photo-1502082553048-f009c37129b9?auto=format&fit=crop&q=80&w=500' },
+          { id: 'rc6', name: 'ลู่วิ่งชายหาดจอมเทียน', type: 'public', baseCost: 0, open: '05:00 - 23:00', loc: 'จอมเทียน, ชลบุรี', image: 'https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?auto=format&fit=crop&q=80&w=500' },
+          { id: 'rc7', name: 'สวนสาธารณะหนองปรือ พัทยา', type: 'public', baseCost: 0, open: '05:00 - 20:00', loc: 'หนองปรือ', image: 'https://images.unsplash.com/photo-1498654896293-37aacf113fd9?auto=format&fit=crop&q=80&w=500' },
+          { id: 'rc8', name: 'อ่างเก็บน้ำมาบประชัน พัทยา', type: 'public', baseCost: 0, open: '05:30 - 19:00', loc: 'พัทยา', image: 'https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?auto=format&fit=crop&q=80&w=500' },
+          { id: 'rc9', name: 'หาดดงตาล สัตหีบ', type: 'public', baseCost: 0, open: '05:00 - 20:00', loc: 'สัตหีบ', image: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&q=80&w=500' },
+          { id: 'rc10', name: 'สวนสุขภาพเฉลิมพระเกียรติ ร.9 ชลบุรี', type: 'public', baseCost: 0, open: '05:00 - 21:00', loc: 'เมืองชลบุรี', image: 'https://images.unsplash.com/photo-1530549387789-4c1017266635?auto=format&fit=crop&q=80&w=500' }
+        ],
+        chiangmai: [
+          { id: 'rm1', name: 'อ่างแก้ว มหาวิทยาลัยเชียงใหม่ (มช.)', type: 'public', baseCost: 0, open: '05:00 - 22:00', loc: 'มช., เชียงใหม่', image: 'https://images.unsplash.com/photo-1519331379826-f10be5486c6f?auto=format&fit=crop&q=80&w=500' },
+          { id: 'rm2', name: 'ห้วยตึงเฒ่า เชียงใหม่', type: 'public', baseCost: 0, open: '06:00 - 18:00', loc: 'แม่ริม, เชียงใหม่', image: 'https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?auto=format&fit=crop&q=80&w=500' },
+          { id: 'rm3', name: 'สวนบวกหาด', type: 'public', baseCost: 0, open: '05:00 - 21:00', loc: 'คูเมืองเชียงใหม่', image: 'https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&q=80&w=500' },
+          { id: 'rm4', name: 'สนามกีฬาสมโภช 700 ปี', type: 'public', baseCost: 0, open: '05:30 - 21:00', loc: 'แม่ริม', image: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&q=80&w=500' },
+          { id: 'rm5', name: 'สวนล้านนา ร.๙ เชียงใหม่', type: 'public', baseCost: 0, open: '05:00 - 19:00', loc: 'ช้างเผือก', image: 'https://images.unsplash.com/photo-1502082553048-f009c37129b9?auto=format&fit=crop&q=80&w=500' },
+          { id: 'rm6', name: 'ลู่วิ่งเลียบคลองชลประทาน เชียงใหม่', type: 'public', baseCost: 0, open: '05:00 - 22:00', loc: 'สุเทพ', image: 'https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?auto=format&fit=crop&q=80&w=500' },
+          { id: 'rm7', name: 'ศูนย์กีฬา มหาวิทยาลัยแม่โจ้', type: 'public', baseCost: 0, open: '05:30 - 20:30', loc: 'สันทราย', image: 'https://images.unsplash.com/photo-1498654896293-37aacf113fd9?auto=format&fit=crop&q=80&w=500' },
+          { id: 'rm8', name: 'อุทยานหลวงราชพฤกษ์', type: 'public', baseCost: 0, open: '05:30 - 19:00', loc: 'แม่เหียะ', image: 'https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?auto=format&fit=crop&q=80&w=500' },
+          { id: 'rm9', name: 'สวนสุขภาพ มช. (นิมมาน)', type: 'public', baseCost: 0, open: '05:00 - 21:00', loc: 'นิมมานฯ', image: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&q=80&w=500' },
+          { id: 'rm10', name: 'สันเขื่อนแม่กวงอุดมธารา', type: 'public', baseCost: 0, open: '06:00 - 18:30', loc: 'ดอยสะเก็ด', image: 'https://images.unsplash.com/photo-1530549387789-4c1017266635?auto=format&fit=crop&q=80&w=500' }
+        ]
+      }
+    };
+
+    const STATIC_TRAINERS = [
+      { id: 't1', name: 'โค้ชภานุวัฒน์ (โค้ชเบิร์ด)', exp: 'ประสบการณ์ 8 ปี', role: 'Certified BWF Level 2', rate: 500, img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=250' },
+      { id: 't2', name: 'โค้ชกุลธิดา (โค้ชเมย์)', exp: 'ประสบการณ์ 6 ปี', role: 'นักกีฬาเยาวชนทีมชาติ', rate: 550, img: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=250' },
+      { id: 't3', name: 'โค้ชธีรพงศ์ (โค้ชอาร์ท)', exp: 'ประสบการณ์ 10 ปี', role: 'USATF Running Coach', rate: 600, img: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=250' },
+      { id: 't4', name: 'โค้ชศิริพร (โค้ชแป้ง)', exp: 'ประสบการณ์ 7 ปี', role: 'เวชศาสตร์การกีฬา & ปรับสรีระ', rate: 500, img: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=250' },
+      { id: 't5', name: 'โค้ชวรเมธ (โค้ชบอส)', exp: 'ประสบการณ์ 5 ปี', role: 'Strength & Bodyweight', rate: 450, img: 'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&q=80&w=250' },
+      { id: 't6', name: 'โค้ชนภัสสร (โค้ชจูน)', exp: 'ประสบการณ์ 9 ปี', role: 'นักโภชนาการกีฬา & วิ่งลดไขมัน', rate: 550, img: 'https://images.unsplash.com/photo-1567532939604-b6b5b0db2604?auto=format&fit=crop&q=80&w=250' },
+      { id: 't7', name: 'โค้ชชัยวัฒน์ (โค้ชชัย)', exp: 'ประสบการณ์ 12 ปี', role: 'อดีตผู้ฝึกสอนสมาคมกีฬาฯ', rate: 650, img: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=250' }
+    ];
+
+    const STATIC_HOURLY_SLOTS = [
+      '16:00 - 17:00 น.', '17:00 - 18:00 น.', '18:00 - 19:00 น.',
+      '19:00 - 20:00 น.', '20:00 - 21:00 น.', '21:00 - 22:00 น.',
+      '22:00 - 23:00 น.', '23:00 - 24:00 น.'
+    ];
+
+    const STATIC_PAID_COURSES = [
+      {
+        id: 1,
+        title: 'โปรแกรม 4 สัปดาห์: สลายไขมันกระชับต้นขา & สะโพกสวย',
+        category: 'ลดน้ำหนัก & กระชับสัดส่วน',
+        duration: '4 สัปดาห์ (16 บทเรียน)',
+        price: 590,
+        originalPrice: 1290,
+        rating: 4.9,
+        reviewsCount: 342,
+        instructor: 'โค้ชป๊อบ Certified Master Trainer',
+        targetResult: 'ลดรอบต้นขา 3-5 ซม., กระชับก้นและลดเซลลูไลท์',
+        thumb: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&q=80&w=600',
+        chapters: [
+          { title: 'บทที่ 1: วอร์มอัพ & ปรับระบบหมุนเวียนน้ำเหลืองต้นขา', duration: '18 นาที' },
+          { title: 'บทที่ 2: ท่าสควอท & เลกลังจ์เจาะจงกล้ามเนื้อขาด้านใน', duration: '25 นาที' },
+          { title: 'บทที่ 3: HIIT สลายไขมันสะสมเฉพาะจุด', duration: '30 นาที' },
+          { title: 'บทที่ 4: Cool-down ยืดเหยียดคืนความยืดหยุ่น', duration: '15 นาที' }
+        ]
+      },
+      {
+        id: 2,
+        title: 'คอร์สสร้างแกนกลางลำตัว & หน้าท้องร่อง 11 ใน 60 วัน',
+        category: 'สร้างกล้ามเนื้อ',
+        duration: '8 สัปดาห์ (24 บทเรียน)',
+        price: 1290,
+        originalPrice: 2500,
+        rating: 4.8,
+        reviewsCount: 218,
+        instructor: 'ดร. เอเลน่า แว้นซ์ (เวชศาสตร์การกีฬา)',
+        targetResult: 'สร้างหน้าท้องร่อง 11 ชัดเจน, ลดไขมันหน้าท้องล่าง',
+        thumb: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&q=80&w=600',
+        chapters: [
+          { title: 'บทที่ 1: ปรับโครงสร้างกระดูกเชิงกราน & ลมหายใจ Abdominal', duration: '20 นาที' },
+          { title: 'บทที่ 2: Isometric Plank & Deadbug สำหรับแกนกลาง', duration: '30 นาที' },
+          { title: 'บทที่ 3: Progressive Resistance Crunches', duration: '35 นาที' }
+        ]
+      },
+      {
+        id: 3,
+        title: 'บำบัดออฟฟิศซินโดรม & ปรับบุคลิกภาพแนวกระดูกสันหลัง',
+        category: 'ออฟฟิศซินโดรม & ยืดเหยียด',
+        duration: '2 สัปดาห์ (10 บทเรียน)',
+        price: 490,
+        originalPrice: 990,
+        rating: 5.0,
+        reviewsCount: 512,
+        instructor: 'กส.นพ. ชัยอนันต์ (นักกายภาพบำบัด)',
+        targetResult: 'คลายปวดสะบัก คอ บ่า ไหล่ และปรับแนวกระดูกสันหลัง',
+        thumb: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&q=80&w=600',
+        chapters: [
+          { title: 'บทที่ 1: คลายพังผืดกล้ามเนื้อคอบ่าไหล่ (Myofascial Release)', duration: '15 นาที' },
+          { title: 'บทที่ 2: ปรับความสมดุลข้อต่อสะโพกและกระดูกเชิงกราน', duration: '20 นาที' },
+          { title: 'บทที่ 3: ท่าโพสโยคะฟื้นฟูกระดูกสันหลังก่อนนอน', duration: '25 นาที' }
+        ]
+      },
+      {
+        id: 4,
+        title: 'โปรแกรมโภชนาการควบคู่เวทเทรนนิ่งปั้นหุ่นฟิต 90 วัน',
+        category: 'สร้างกล้ามเนื้อ',
+        duration: '12 สัปดาห์ (36 บทเรียน)',
+        price: 1990,
+        originalPrice: 3500,
+        rating: 4.9,
+        reviewsCount: 189,
+        instructor: 'โค้ชมายด์ (Maya) & นักกำหนดอาหารคลินิก',
+        targetResult: 'สร้างมวลกล้ามเนื้อ + 2.5 กก., เร่งระบบเมตาบอลิซึม 24/7',
+        thumb: 'https://images.unsplash.com/photo-1574680096145-d05b474e2155?auto=format&fit=crop&q=80&w=600',
+        chapters: [
+          { title: 'บทที่ 1: คำนวณ TDEE & จัดสัดส่วนอาหารตามเป้าหมาย', duration: '25 นาที' },
+          { title: 'บทที่ 2: Hypertrophy Upper Body Workout', duration: '40 นาที' },
+          { title: 'บทที่ 3: Progressive Overload Lower Body', duration: '45 นาที' }
+        ]
+      },
+      {
+        id: 5,
+        title: 'Pilates Core Mat & Sculpt ปรับแนวกระดูกเชิงกราน',
+        category: 'ลดน้ำหนัก & กระชับสัดส่วน',
+        duration: '6 สัปดาห์ (18 บทเรียน)',
+        price: 890,
+        originalPrice: 1790,
+        rating: 4.95,
+        reviewsCount: 275,
+        instructor: 'ครูแพรว STOTT Pilates Certified',
+        targetResult: 'กระชับแกนกลางลึก ลดอาการปวดหลังล่าง สรีระเพรียวกระชับ',
+        thumb: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&q=80&w=600',
+        chapters: [
+          { title: 'บทที่ 1: Pelvic Clock & Neutral Spine Fundamentals', duration: '20 นาที' },
+          { title: 'บทที่ 2: Pilates Hundred & Single Leg Stretch', duration: '28 นาที' },
+          { title: 'บทที่ 3: Side Kick Series เพื่อสะโพกและต้นขาด้านนอก', duration: '25 นาที' }
+        ]
+      },
+      {
+        id: 6,
+        title: 'Zone 2 Cardio & Metabolic Reset วิ่งคุมโซนลดไขมันลึก',
+        category: 'ลดน้ำหนัก & กระชับสัดส่วน',
+        duration: '4 สัปดาห์ (12 บทเรียน)',
+        price: 690,
+        originalPrice: 1490,
+        rating: 4.88,
+        reviewsCount: 310,
+        instructor: 'โค้ชอาร์ท USATF Running Coach',
+        targetResult: 'เพิ่มความจุหัวใจ VO2 Max, สลายไขมันสะสมในช่องท้องอย่างยั่งยืน',
+        thumb: 'https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?auto=format&fit=crop&q=80&w=600',
+        chapters: [
+          { title: 'บทที่ 1: วัดค่า Heart Rate Zones & คำนวณขีดจำกัด Lactate', duration: '22 นาที' },
+          { title: 'บทที่ 2: การวิ่งแบบ Aerobic Base Building 45 นาที', duration: '35 นาที' },
+          { title: 'บทที่ 3: การฟื้นฟูกล้ามเนื้อขาและข้อเท้าหลังวิ่งยาว', duration: '20 นาที' }
+        ]
+      }
+    ];
+
+    const STATIC_FREE_WORKOUTS = [
+      {
+        id: 101,
+        title: 'HIIT สลายไขมันกระชับต้นขา & สะโพก (25 นาที)',
+        category: 'กระชับต้นขา',
+        duration: '25 นาที',
+        cal: '280 kcal',
+        level: 'ระดับปานกลาง',
+        instructor: 'โค้ชมายด์ (Maya)',
+        thumb: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&q=80&w=600',
+        steps: ['วอร์มอัพ Sumo Squats (3 นาที)', 'ท่า Curtsy Lunges (3 เซต)', 'ท่า Lateral Leg Raises', 'ยืดเหยียดคูลดาวน์']
+      },
+      {
+        id: 102,
+        title: 'ยืดเหยียดกล้ามเนื้อทั่วร่างกาย & ผ่อนคลายกระดูกสันหลัง',
+        category: 'ยืดเหยียด',
+        duration: '30 นาที',
+        cal: '120 kcal',
+        level: 'ทุกระดับ',
+        instructor: 'โค้ชศิรินทร์',
+        thumb: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&q=80&w=600',
+        steps: ['ยืดกล้ามเนื้อต้นขาด้านหลัง (Hamstrings)', 'ยืดข้อต่อสะโพก Hip Flexors', 'หมุนกระดูกสันหลังคลายปวดสะบัก']
+      },
+      {
+        id: 103,
+        title: 'Bodyweight Core Burn & กระชับหน้าท้องร่อง 11',
+        category: 'สร้างกล้ามเนื้อ',
+        duration: '20 นาที',
+        cal: '190 kcal',
+        level: 'ทุกระดับ',
+        instructor: 'โค้ชบอส Strength Specialist',
+        thumb: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&q=80&w=600',
+        steps: ['Forearm Plank 45 วินาที (3 เซต)', 'Deadbug ช้าๆ คุมแกนกลาง', 'Mountain Climbers จังหวะเร็ว 30 วินาที']
+      },
+      {
+        id: 104,
+        title: 'Desk Yoga & คลายคอบ่าไหล่ฉบับชาวออฟฟิศ',
+        category: 'ออฟฟิศซินโดรม',
+        duration: '15 นาที',
+        cal: '75 kcal',
+        level: 'ระดับเริ่มต้น',
+        instructor: 'ครูแป้ง นักกายภาพบำบัด',
+        thumb: 'https://images.unsplash.com/photo-1545205597-3d9d02c29597?auto=format&fit=crop&q=80&w=600',
+        steps: ['ยืดกล้ามเนื้อ Trapezius และคอด้านข้าง', 'เปิดหน้าอกและสะบักด้วยท่า Eagle Arms', 'บิดลำตัวบนเก้าอี้คลายหลังล่าง']
+      }
+    ];
+
+    const STATIC_SAMPLE_FOODS = [
+      {
+        id: 'f1',
+        category: 'โลว์คาร์บ/คีโต',
+        name: 'ขนมปังอะโวคาโด & ไข่ต้มยางมะตูม',
+        calories: 420,
+        protein: 18,
+        carbs: 32,
+        fat: 22,
+        glycemicIndex: 'ต่ำ (GI 35)',
+        alignment: 'เหมาะอย่างยิ่งสำหรับการกระชับต้นขาและป้องกันระดับน้ำตาลในเลือดพุ่งสูงช่วงเช้า',
+        image: 'https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&q=80&w=500'
+      },
+      {
+        id: 'f2',
+        category: 'โปรตีนสูง',
+        name: 'สลัดแซลมอนย่างคินัวพาวเวอร์โบวล์',
+        calories: 580,
+        protein: 42,
+        carbs: 45,
+        fat: 20,
+        glycemicIndex: 'ต่ำมาก (GI 28)',
+        alignment: 'โปรตีนสูงจากปลาแซลมอนช่วยฟื้นฟูกล้ามเนื้อและเร่งอัตราการเผาผลาญไขมันลึก',
+        image: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&q=80&w=500'
+      },
+      {
+        id: 'f3',
+        category: 'ลดไขมัน/ลีน',
+        name: 'อกไก่ย่างสมุนไพร & ข้าวไรซ์เบอร์รีบล็อกโคลี',
+        calories: 390,
+        protein: 48,
+        carbs: 34,
+        fat: 6,
+        glycemicIndex: 'ต่ำ (GI 38)',
+        alignment: 'ไขมันต่ำมาก เหมาะสำหรับช่วงคุมแคลอรีลีนไขมันหน้าท้องโดยไม่สูญเสียมวลกล้ามเนื้อ',
+        image: 'https://images.unsplash.com/photo-1532550907401-a500c9a57435?auto=format&fit=crop&q=80&w=500'
+      },
+      {
+        id: 'f4',
+        category: 'เมนูสุขภาพไทย',
+        name: 'ต้มยำกุ้งน้ำใสเห็ดรวม & ผักสดพื้นบ้าน',
+        calories: 220,
+        protein: 28,
+        carbs: 12,
+        fat: 4,
+        glycemicIndex: 'ต่ำมาก (GI 20)',
+        alignment: 'แคลอรีต่ำ อุดมด้วยสมุนไพรไทย ข่า ตะไคร้ ใบมะกรูด ช่วยกระตุ้นระบบย่อยและเผาผลาญ',
+        image: 'https://images.unsplash.com/photo-1569562211093-4ed0d0758f12?auto=format&fit=crop&q=80&w=500'
+      },
+      {
+        id: 'f5',
+        category: 'ลดไขมัน/ลีน',
+        name: 'อาซาอิเบอร์รีโบวล์ & กราโนล่าไม่เติมน้ำตาล',
+        calories: 310,
+        protein: 10,
+        carbs: 48,
+        fat: 8,
+        glycemicIndex: 'ต่ำ (GI 40)',
+        alignment: 'อุดมด้วยสารต้านอนุมูลอิสระ Anthocyanin บำรุงผิวพรรณสดใสและช่วยฟื้นฟูเซลล์หลังออกกำลังกาย',
+        image: 'https://images.unsplash.com/photo-1590080875515-8a3a8dc5735e?auto=format&fit=crop&q=80&w=500'
+      },
+      {
+        id: 'f6',
+        category: 'โปรตีนสูง',
+        name: 'สเต็กทูน่าย่างพริกไทยดำ & หน่อไม้ฝรั่งอบ',
+        calories: 440,
+        protein: 46,
+        carbs: 16,
+        fat: 14,
+        glycemicIndex: 'ต่ำมาก (GI 18)',
+        alignment: 'กรดไขมันจำเป็น Omega-3 สูง ช่วยลดการอักเสบในหลอดเลือดและส่งเสริมการสร้างกล้ามเนื้อ',
+        image: 'https://images.unsplash.com/photo-1501595091296-3aa970afb3ff?auto=format&fit=crop&q=80&w=500'
+      },
+      {
+        id: 'f7',
+        category: 'โลว์คาร์บ/คีโต',
+        name: 'มัทฉะลาเต้นมอัลมอนด์ & มัฟฟินบลูเบอร์รีคีโต',
+        calories: 360,
+        protein: 12,
+        carbs: 22,
+        fat: 18,
+        glycemicIndex: 'ต่ำ (GI 32)',
+        alignment: 'สาร EGCG ในชาเขียวมัทฉะช่วยเร่งอัตราการเผาผลาญไขมันช่วง Fasting',
+        image: 'https://images.unsplash.com/photo-1536256263959-770b48d82b0a?auto=format&fit=crop&q=80&w=500'
+      },
+      {
+        id: 'f8',
+        category: 'เมนูสุขภาพไทย',
+        name: 'แกงส้มผักรวมปลาช่อนย่างไม่ใส่น้ำตาล',
+        calories: 270,
+        protein: 34,
+        carbs: 18,
+        fat: 5,
+        glycemicIndex: 'ต่ำมาก (GI 25)',
+        alignment: 'ใยอาหารสูงจากผักพื้นบ้าน ช่วยให้อิ่มนาน ชะลอการดูดซึมน้ำตาลเข้าสู่กระแสเลือด',
+        image: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&q=80&w=500'
+      }
+    ];
+
+    const STATIC_DEFAULT_MEDS = [
+      { 
+        id: 1, 
+        name: 'Metformin 500mg (ยาคุมระดับน้ำตาล)', 
+        dosage: '1 เม็ด',
+        dosageAmount: 1,
+        timing: 'หลังอาหารเย็น', 
+        time: '20:00 น.', 
+        stock: 12, 
+        minStock: 5,
+        category: 'ยาประจำตัว',
+        notes: 'ช่วยควบคุมระดับน้ำตาลในเลือด ป้องกันภาวะน้ำตาลในเลือดสูงช่วงหลังอาหาร',
+        image: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&q=80&w=300' 
+      },
+      { 
+        id: 2, 
+        name: 'Vitamin D3 2000 IU', 
+        dosage: '1 แคปซูล',
+        dosageAmount: 1,
+        timing: 'หลังอาหารเช้า', 
+        time: '09:00 น.', 
+        stock: 24, 
+        minStock: 10,
+        category: 'วิตามิน/อาหารเสริม',
+        notes: 'เสริมสร้างภูมิคุ้มกัน ช่วยการดูดซึมแคลเซียม บำรุงกระดูก',
+        image: 'https://images.unsplash.com/photo-1550572017-edf7928900f3?auto=format&fit=crop&q=80&w=300' 
+      },
+      { 
+        id: 3, 
+        name: 'น้ำมันปลา Omega-3 1000mg', 
+        dosage: '1 ซอฟต์เจล',
+        dosageAmount: 1,
+        timing: 'หลังอาหารเที่ยง', 
+        time: '13:00 น.', 
+        stock: 4, 
+        minStock: 5,
+        category: 'วิตามิน/อาหารเสริม',
+        notes: 'ลดการอักเสบในเซลล์ บำรุงระบบหลอดเลือดและหัวใจ',
+        image: 'https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?auto=format&fit=crop&q=80&w=300' 
+      },
+      { 
+        id: 4, 
+        name: 'Paracetamol (พาราเซตามอล 500mg)', 
+        dosage: '1 เม็ด',
+        dosageAmount: 1,
+        timing: 'เมื่อมีไข้/ปวดทุก 4-6 ชม.', 
+        time: '12:00 น.', 
+        stock: 18, 
+        minStock: 6,
+        category: 'ยารักษาตามอาการ',
+        notes: 'บรรเทาอาการปวดระดับเบาถึงปานกลาง และลดไข้',
+        image: 'https://images.unsplash.com/photo-1471864190281-a93a3070b6de?auto=format&fit=crop&q=80&w=300' 
+      }
+    ];
+
+    const STATIC_MARKET_PRODUCTS = [
+      { 
+        name: 'น้ำมันปลา Omega-3 สกัดบริสุทธิ์ (1000mg)', 
+        price: '790 บาท', 
+        tag: 'ส่งด่วนทันที', 
+        properties: 'ช่วยลดระดับไตรกลีเซอไรด์ บำรุงข้อต่อ ยับยั้งการอักเสบในเซลล์ และส่งเสริมการทำงานของสมอง',
+        detail: 'บรรจุ 60 ซอฟต์เจล (รับประทานวันละ 1-2 เม็ดหลังอาหาร)'
+      },
+      { 
+        name: 'วิตามิน C 1000mg + ซิงค์ (Zinc)', 
+        price: '450 บาท', 
+        tag: 'เสริมภูมิคุ้มกัน', 
+        properties: 'เสริมสร้างภูมิคุ้มกันร่างกาย ต้านอนุมูลอิสระ กระตุ้นการสร้างคอลลาเจน และช่วยให้แผลหายเร็วขึ้น',
+        detail: 'บรรจุ 90 เม็ด (รับประทานวันละ 1 เม็ดหลังอาหารเช้า)'
+      },
+      { 
+        name: 'ชุดยาสามัญประจำบ้านบรรเทาไข้หวัด', 
+        price: '350 บาท', 
+        tag: 'ยาสามัญประจำบ้าน', 
+        properties: 'บรรเทาอาการไข้ ลดปวดตัว คลายอาการเจ็บคอ คัดแน่นจมูก และชดเชยน้ำเกลือแร่เมื่อสูญเสียเหงื่อ',
+        detail: 'ประกอบด้วย พาราเซตามอล 500mg, ยาแก้ไอขับเสมหะ, เกลือแร่ ORS'
+      },
+      { 
+        name: 'โปรไบโอติกส์ Probiotics Complex 10B', 
+        price: '990 บาท', 
+        tag: 'AI แนะนำ', 
+        properties: 'ปรับสมดุลจุลินทรีย์ในลำไส้ ช่วยการย่อยและขับถ่าย บรรเทาอาการท้องอืด และช่วยการดูดซึมสารอาหาร',
+        detail: 'บรรจุ 30 แคปซูล (รับประทานก่อนนอนวันละ 1 แคปซูล)'
+      }
+    ];
+
+    // --- Main Application Component ---
+    function App() {
+      const [theme, setTheme] = useState('dark');
+      // Ordered strictly: หน้าหลัก (dashboard), คอมมูนิตี้กีฬา (community), สแกน 3D (fitness), สแกนอาหาร (nutrition), ตารางยา (meds), ประเมินอาการ (telemedicine)
+      const [activeTab, setActiveTab] = useState('dashboard');
+      const [currentRegion, setCurrentRegion] = useState('bkk');
+
+      useEffect(() => {
+        const rootHtml = document.documentElement;
+        if (theme === 'dark') {
+          rootHtml.classList.add('dark');
+          document.body.className = "bg-gradient-to-br from-[#1E1B4B] via-[#0F172A] to-[#1E1B4B] text-slate-100 antialiased selection:bg-lime-400 selection:text-slate-950 transition-colors duration-300 min-h-screen";
+        } else {
+          rootHtml.classList.remove('dark');
+          document.body.className = "bg-gradient-to-br from-[#E2E8F0] via-[#F1F5F9] to-[#E2E8F0] text-slate-900 antialiased selection:bg-indigo-900 selection:text-white transition-colors duration-300 min-h-screen";
+        }
+      }, [theme]);
+
+      const toggleTheme = () => {
+        setTheme(prev => prev === 'dark' ? 'light' : 'dark');
+      };
+
+      const [userStats, setUserStats] = useState({
+        steps: 8420,
+        stepsGoal: 10000,
+        water: 1850,
+        waterGoal: 2500,
+        calories: 1420,
+        caloriesGoal: 2100,
+        protein: 85,
+        carbs: 160,
+        fat: 45,
+        lastBodyFat: 19.4,
+        muscleMass: 42.1
+      });
+
+      const [timeline, setTimeline] = useState([
+        { id: 1, time: '08:00 น.', title: 'ทานยาเช้า (Metformin 500mg)', type: 'med', completed: true, tag: 'สุขภาพ' },
+        { id: 2, time: '08:30 น.', title: 'บันทึกอาหารเช้า (ขนมปังอะโวคาโด & ไข่ต้ม)', type: 'food', completed: true, tag: '420 kcal' },
+        { id: 3, time: '12:30 น.', title: 'บันทึกอาหารเที่ยง (สลัดแซลมอนคินัว)', type: 'food', completed: true, tag: '580 kcal' },
+        { id: 4, time: '14:00 น.', title: 'จิบน้ำเพิ่มความสดชื่น (+500ml)', type: 'water', completed: true, tag: 'ดื่มน้ำ' },
+        { id: 5, time: '18:00 น.', title: 'คอมมูนิตี้วิ่งคุมโซนหัวใจ (สวนเบญจกิติ)', type: 'workout', completed: false, tag: '60 นาที' },
+        { id: 6, time: '20:00 น.', title: 'ทานวิตามิน D3 & โอเมก้า 3', type: 'med', completed: false, tag: 'วิตามิน' }
+      ]);
+
+      const [toast, setToast] = useState(null);
+      const showToast = (message, type = 'success') => {
+        setToast({ message, type });
+        setTimeout(() => setToast(null), 3600);
+      };
+
+      const handleAddWater = (amount = 250) => {
+        setUserStats(prev => ({ ...prev, water: Math.min(prev.waterGoal, prev.water + amount) }));
+        showToast(`บันทึกการดื่มน้ำ: +${amount} มล. เรียบร้อย 💧`);
+      };
+
+      const toggleTimeline = (id) => {
+        setTimeline(prev => prev.map(item => item.id === id ? { ...item, completed: !item.completed } : item));
+        showToast('อัปเดตสถานะกิจกรรมเรียบร้อยแล้ว');
+      };
+
+      const isDark = theme === 'dark';
+
+      return (
+        <div className="min-h-screen flex flex-col justify-between max-w-7xl mx-auto px-2 sm:px-6 py-3 relative">
+          
+          {/* Toast Notification */}
+          {toast && (
+            <div className="fixed top-5 right-5 z-50 flex items-center gap-2.5 px-5 py-3 rounded-2xl shadow-2xl backdrop-blur-xl border border-white/20 bg-slate-900/90 text-white animate-fadeIn">
+              <span className="w-2.5 h-2.5 rounded-full bg-lime-400 animate-ping"></span>
+              <span className="text-xs font-semibold tracking-wide">{toast.message}</span>
+            </div>
+          )}
+
+          {/* Top Bar with Profile Pill, Region, Theme Switch */}
+          <header className={`sticky top-0 z-40 rounded-3xl px-4 sm:px-6 py-3.5 mb-5 flex items-center justify-between transition-all backdrop-blur-2xl shadow-lg ${
+            isDark ? 'glass-card-dark border-white/10' : 'glass-card-light border-slate-300'
+          }`}>
+            <div className="flex items-center gap-3">
+              <div className="relative">
+                <img 
+                  src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=140" 
+                  alt="John" 
+                  className={`w-11 h-11 rounded-2xl object-cover shadow-md ring-2 ${isDark ? 'ring-lime-400' : 'ring-indigo-700'}`}
+                />
+                <span className={`absolute -bottom-1 -right-1 w-3.5 h-3.5 border-2 border-slate-900 rounded-full ${isDark ? 'bg-lime-400' : 'bg-emerald-600'}`}></span>
+              </div>
+              <div>
+                <div className={`text-[11px] font-medium ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>Hi, John</div>
+                <div className="text-sm font-extrabold tracking-tight flex items-center gap-1.5">
+                  <span className={isDark ? 'text-white' : 'text-slate-950'}>Get Ready</span>
+                  <span className={`px-1.5 py-0.5 rounded-md text-[10px] font-black ${
+                    isDark ? 'bg-lime-400/20 text-lime-300 border border-lime-400/30' : 'bg-indigo-900 text-white shadow-sm'
+                  }`}>Pro</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Middle Logo & Subtitle (Desktop) */}
+            <div className="hidden md:flex flex-col items-center">
+              <div className={`text-lg font-black tracking-wider ${
+                isDark 
+                  ? 'bg-gradient-to-r from-blue-400 via-indigo-300 to-lime-300 bg-clip-text text-transparent' 
+                  : 'bg-gradient-to-r from-blue-700 via-indigo-900 to-slate-900 bg-clip-text text-transparent'
+              }`}>
+                AURA HEALTH
+              </div>
+              <span className={`text-[10px] font-semibold ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>Patient Management & Sports Hub</span>
+            </div>
+
+            {/* Actions: Region Selector + Theme Toggle + Bell */}
+            <div className="flex items-center gap-2 sm:gap-3">
+              
+              <div className="relative">
+                <select 
+                  value={currentRegion}
+                  onChange={(e) => {
+                    setCurrentRegion(e.target.value);
+                    const regionNames = { bkk: 'กรุงเทพฯ และปริมณฑล', chonburi: 'ชลบุรี / พัทยา', chiangmai: 'เชียงใหม่' };
+                    showToast(`เปลี่ยนพื้นที่เป็น: ${regionNames[e.target.value]} 📍`);
+                  }}
+                  className={`text-xs font-semibold py-2 px-3.5 rounded-2xl border appearance-none pr-8 cursor-pointer transition-all ${
+                    isDark 
+                      ? 'bg-white/10 text-slate-200 border-white/10 hover:border-lime-400/50' 
+                      : 'bg-white text-slate-800 border-slate-300 hover:border-blue-600'
+                  }`}
+                >
+                  <option value="bkk">📍 กรุงเทพฯ</option>
+                  <option value="chonburi">📍 ชลบุรี</option>
+                  <option value="chiangmai">📍 เชียงใหม่</option>
+                </select>
+                <div className="absolute right-2.5 top-3 pointer-events-none text-slate-400">
+                  <Icon name="mapPin" className="w-3.5 h-3.5 text-lime-400" />
+                </div>
+              </div>
+
+              {/* Theme Toggle Button */}
+              <button 
+                onClick={toggleTheme}
+                title={isDark ? 'เปลี่ยนเป็น Light Mode' : 'เปลี่ยนเป็น Dark Mode'}
+                className={`p-2.5 rounded-2xl border transition-all ${
+                  isDark 
+                    ? 'bg-white/10 text-amber-300 border-white/10 hover:bg-white/20' 
+                    : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100'
+                }`}
+              >
+                {isDark ? <Icon name="sun" className="w-4 h-4 text-lime-300" /> : <Icon name="moon" className="w-4 h-4 text-indigo-600" />}
+              </button>
+
+              {/* Notification Bell */}
+              <button 
+                onClick={() => showToast('ไม่มีการแจ้งเตือนใหม่ในขณะนี้')}
+                className={`p-2.5 rounded-2xl border transition-all relative ${
+                  isDark ? 'bg-white/10 text-white border-white/10' : 'bg-white text-slate-700 border-slate-200'
+                }`}
+              >
+                <Icon name="bell" className="w-4 h-4" />
+                <span className="absolute 1 top-1.5 right-1.5 w-2 h-2 rounded-full bg-lime-400"></span>
+              </button>
+            </div>
+          </header>
+
+          {/* Main App Content */}
+          <main className="flex-1 pb-24">
+            {activeTab === 'dashboard' && (
+              <DashboardView 
+                theme={theme}
+                userStats={userStats} 
+                handleAddWater={handleAddWater} 
+                timeline={timeline}
+                toggleTimeline={toggleTimeline}
+                setActiveTab={setActiveTab}
+                showToast={showToast}
+              />
+            )}
+            {activeTab === 'community' && (
+              <CommunitySportsView 
+                theme={theme}
+                currentRegion={currentRegion}
+                setCurrentRegion={setCurrentRegion}
+                showToast={showToast}
+                setTimeline={setTimeline}
+              />
+            )}
+            {activeTab === 'fitness' && (
+              <FitnessBodyScanView 
+                theme={theme}
+                userStats={userStats} 
+                setUserStats={setUserStats}
+                showToast={showToast}
+                setActiveTab={setActiveTab}
+              />
+            )}
+            {activeTab === 'nutrition' && (
+              <FoodScannerView 
+                theme={theme}
+                userStats={userStats} 
+                setUserStats={setUserStats}
+                setTimeline={setTimeline}
+                showToast={showToast}
+              />
+            )}
+            {activeTab === 'meds' && (
+              <MedicationTrackerView 
+                theme={theme}
+                showToast={showToast}
+              />
+            )}
+            {activeTab === 'telemedicine' && (
+              <TelemedicineView 
+                theme={theme}
+                showToast={showToast}
+              />
+            )}
+          </main>
+
+          {/* Persistent Floating Bottom Nav (STRICT REQUESTED ORDER) */}
+          {/* 1. หน้าหลัก 2. คอมมูนิตี้กีฬา 3. สแกน 3D 4. สแกนอาหาร 5. ตารางยา 6. ประเมินอาการ */}
+          <nav className={`fixed bottom-3 left-3 right-3 max-w-4xl mx-auto z-40 rounded-3xl p-2 transition-all shadow-2xl ${
+            isDark ? 'glass-card-dark border-white/20' : 'glass-card-light border-white/90'
+          }`}>
+            <div className="grid grid-cols-6 gap-1">
+              <NavItem 
+                theme={theme}
+                icon={<Icon name="activity" />} 
+                label="หน้าหลัก" 
+                active={activeTab === 'dashboard'} 
+                onClick={() => setActiveTab('dashboard')} 
+              />
+              <NavItem 
+                theme={theme}
+                icon={<Icon name="users" />} 
+                label="คอมมูนิตี้กีฬา" 
+                active={activeTab === 'community'} 
+                onClick={() => setActiveTab('community')} 
+              />
+              <NavItem 
+                theme={theme}
+                icon={<Icon name="barChart2" />} 
+                label="สแกน 3D" 
+                active={activeTab === 'fitness'} 
+                onClick={() => setActiveTab('fitness')} 
+              />
+              <NavItem 
+                theme={theme}
+                icon={<Icon name="camera" />} 
+                label="สแกนอาหาร" 
+                active={activeTab === 'nutrition'} 
+                onClick={() => setActiveTab('nutrition')} 
+              />
+              <NavItem 
+                theme={theme}
+                icon={<Icon name="pill" />} 
+                label="ตารางยา" 
+                active={activeTab === 'meds'} 
+                onClick={() => setActiveTab('meds')} 
+              />
+              <NavItem 
+                theme={theme}
+                icon={<Icon name="heart" />} 
+                label="ประเมินอาการ" 
+                active={activeTab === 'telemedicine'} 
+                onClick={() => setActiveTab('telemedicine')} 
+              />
+            </div>
+          </nav>
+
+        </div>
+      );
+    }
+
+    // --- Sub Navigation Item ---
+    function NavItem({ theme, icon, label, active, onClick }) {
+      const isDark = theme === 'dark';
+      return (
+        <button 
+          onClick={onClick}
+          className={`flex flex-col items-center py-2 px-1 rounded-2xl transition-all relative ${
+            active 
+              ? isDark 
+                ? 'bg-lime-400 text-slate-950 font-black shadow-lg shadow-lime-400/25 scale-102' 
+                : 'bg-slate-950 text-white font-black shadow-lg shadow-slate-950/20 scale-102'
+              : isDark 
+                ? 'text-slate-400 hover:text-white hover:bg-white/5' 
+                : 'text-slate-600 hover:text-slate-950 hover:bg-slate-200/60 font-semibold'
+          }`}
+        >
+          <div className="w-5 h-5 flex items-center justify-center">
+            {icon}
+          </div>
+          <span className="text-[10px] mt-1 tracking-tight truncate w-full text-center">{label}</span>
+          {active && (
+            <span className={`absolute -bottom-0.5 w-1.5 h-1.5 rounded-full ${isDark ? 'bg-slate-950' : 'bg-lime-400'}`}></span>
+          )}
+        </button>
+      );
+    }
+
+    // ==========================================
+    // 1. DASHBOARD VIEW (หน้าหลัก)
+    // ==========================================
+    function DashboardView({ theme, userStats, handleAddWater, timeline, toggleTimeline, setActiveTab, showToast }) {
+      const isDark = theme === 'dark';
+      const [patientRulerVal, setPatientRulerVal] = useState(6);
+      const [selectedDate, setSelectedDate] = useState('23');
+
+      const datePills = [
+        { day: 'Sun', date: '21' },
+        { day: 'Mon', date: '22' },
+        { day: 'Tue', date: '23' },
+        { day: 'Wed', date: '24' },
+        { day: 'Thu', date: '25' }
+      ];
+
+      return (
+        <div className="space-y-6 animate-fadeIn">
+          {/* Main Top Banner */}
+          <div className="relative rounded-3xl overflow-hidden bg-gradient-to-r from-[#1D4ED8] via-[#312E81] to-[#0F172A] p-6 sm:p-8 border border-white/20 shadow-2xl text-white">
+            <div className="absolute top-0 right-0 w-96 h-96 bg-lime-400/10 rounded-full blur-3xl pointer-events-none"></div>
+
+            <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+              <div className="space-y-2.5 max-w-xl">
+                <div className="inline-flex items-center gap-2 bg-black/40 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold text-lime-300 border border-lime-400/30">
+                  <Icon name="zap" className="w-3.5 h-3.5 text-lime-300" /> เชื่อมต่อ Apple Health & Garmin อัตโนมัติ
+                </div>
+                <div className="text-xs uppercase tracking-wider text-indigo-200 font-semibold">Patient Management</div>
+                <h1 className="text-3xl sm:text-4xl font-black tracking-tight">Dashboard</h1>
+                <p className="text-xs sm:text-sm text-slate-200 leading-relaxed">
+                  วันนี้คุณทำเป้าหมายสำเร็จไปแล้ว <strong className="text-lime-300 font-extrabold">82%</strong> โปรแกรมกระชับสัดส่วนและควบคุมระดับน้ำตาลตอบสนองได้ดีเยี่ยม
+                </p>
+              </div>
+
+              {/* Day Selector Pills */}
+              <div className="flex gap-1.5 bg-black/40 backdrop-blur-md p-1.5 rounded-2xl border border-white/10 self-start md:self-auto overflow-x-auto">
+                {datePills.map((item) => {
+                  const isActive = selectedDate === item.date;
+                  return (
+                    <button 
+                      key={item.date}
+                      onClick={() => {
+                        setSelectedDate(item.date);
+                        showToast(`เลือกดูข้อมูลสุขภาพประจำวัน: ${item.day} ${item.date} ต.ค.`);
+                      }}
+                      className={`flex flex-col items-center justify-center px-3 py-2 rounded-xl text-xs font-bold transition-all ${
+                        isActive 
+                          ? 'bg-lime-400 text-slate-950 font-black shadow-lg shadow-lime-400/30 scale-105' 
+                          : 'text-slate-300 hover:text-white hover:bg-white/10'
+                      }`}
+                    >
+                      <span className="text-[10px] font-medium opacity-80">{item.day}</span>
+                      <span className="text-sm mt-0.5">{item.date}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+
+          {/* Quick Metrics Strip */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            
+            {/* Steps Metric */}
+            <div className={`p-5 rounded-3xl border transition-all ${isDark ? 'glass-card-dark' : 'glass-card-light'}`}>
+              <div className="flex items-center justify-between mb-3">
+                <span className={`text-[11px] font-bold uppercase tracking-wider ${isDark ? 'text-slate-400' : 'text-slate-700'}`}>การเคลื่อนไหว & ก้าวเดิน</span>
+                <span className={`p-2 rounded-xl ${isDark ? 'bg-blue-500/20 text-blue-400' : 'bg-blue-100 text-blue-900'}`}><Icon name="activity" className="w-4 h-4" /></span>
+              </div>
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className={`text-2xl font-black ${isDark ? 'text-white' : 'text-slate-950'}`}>{userStats.steps.toLocaleString()}</div>
+                  <div className={`text-[11px] font-medium ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>เป้าหมาย {userStats.stepsGoal.toLocaleString()} ก้าว</div>
+                </div>
+                <div className={`w-12 h-12 rounded-full border-4 flex items-center justify-center font-black text-xs ${
+                  isDark ? 'border-lime-400 text-lime-400' : 'border-slate-900 text-slate-950'
+                }`}>
+                  {Math.round((userStats.steps / userStats.stepsGoal) * 100)}%
+                </div>
+              </div>
+            </div>
+
+            {/* Counseling & Lab Test Quick Widgets */}
+            <div className={`p-5 rounded-3xl border transition-all flex flex-col justify-between ${isDark ? 'glass-card-dark' : 'glass-card-light'}`}>
+              <div className="flex items-center justify-between mb-2">
+                <span className={`text-[11px] font-bold uppercase tracking-wider ${isDark ? 'text-slate-400' : 'text-slate-700'}`}>Counseling</span>
+                <Icon name="stopwatch" className={`w-4 h-4 ${isDark ? 'text-amber-300' : 'text-amber-600'}`} />
+              </div>
+              <div>
+                <div className={`text-2xl font-black ${isDark ? 'text-white' : 'text-slate-950'}`}>1:45 <span className="text-xs font-normal text-slate-500">Hours</span></div>
+                <div className={`text-[11px] mt-1 flex items-center gap-1 font-semibold ${isDark ? 'text-emerald-400' : 'text-emerald-800'}`}>
+                  <Icon name="checkCircle" className="w-3.5 h-3.5" /> ให้คำปรึกษาตรงตามตาราง
+                </div>
+              </div>
+              <button 
+                onClick={() => {
+                  setActiveTab('telemedicine');
+                  showToast('เปิดหน้าต่าง AI ประเมินอาการ & นัดหมายแพทย์');
+                }}
+                className={`mt-3 w-full py-1.5 text-xs font-bold rounded-xl transition-all ${
+                  isDark ? 'bg-white/10 hover:bg-white/20 text-white' : 'bg-slate-200 hover:bg-slate-300 text-slate-900'
+                }`}
+              >
+                ดูรายละเอียด
+              </button>
+            </div>
+
+            <div className={`p-5 rounded-3xl border transition-all flex flex-col justify-between ${isDark ? 'glass-card-dark' : 'glass-card-light'}`}>
+              <div className="flex items-center justify-between mb-2">
+                <span className={`text-[11px] font-bold uppercase tracking-wider ${isDark ? 'text-slate-400' : 'text-slate-700'}`}>Lab Tests</span>
+                <Icon name="testTube" className={`w-4 h-4 ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`} />
+              </div>
+              <div>
+                <div className={`text-2xl font-black ${isDark ? 'text-lime-400' : 'text-slate-950'}`}>14/25 <span className="text-xs font-normal text-slate-500">Results</span></div>
+                <div className={`text-[11px] font-medium mt-1 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>อัปเดตผลตรวจเลือดล่าสุด</div>
+              </div>
+              <button 
+                onClick={() => showToast('ผลตรวจ Lab ปกติทุกรายการ: ระดับน้ำตาลสะสม HbA1c 5.4% (ปกติ)')}
+                className={`mt-3 w-full py-1.5 text-xs font-bold rounded-xl transition-all ${
+                  isDark ? 'bg-lime-400/20 hover:bg-lime-400/30 text-lime-300' : 'bg-slate-900 text-white hover:bg-slate-800'
+                }`}
+              >
+                เปิดไฟล์แล็บ
+              </button>
+            </div>
+
+            {/* Hydration Tracker */}
+            <div className={`p-5 rounded-3xl border transition-all flex flex-col justify-between ${isDark ? 'glass-card-dark' : 'glass-card-light'}`}>
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <span className={`text-[11px] font-bold uppercase tracking-wider ${isDark ? 'text-slate-400' : 'text-slate-700'}`}>การดื่มน้ำ</span>
+                  <span className={`p-1.5 rounded-xl ${isDark ? 'bg-cyan-500/20 text-cyan-400' : 'bg-cyan-100 text-cyan-800'}`}><Icon name="droplets" className="w-4 h-4" /></span>
+                </div>
+                <div className={`text-2xl font-black ${isDark ? 'text-white' : 'text-slate-950'}`}>{userStats.water} <span className="text-xs font-normal text-slate-500">/ {userStats.waterGoal} มล.</span></div>
+              </div>
+              <button 
+                onClick={() => handleAddWater(250)}
+                className={`mt-3 w-full py-2 font-bold text-xs rounded-xl transition-all flex items-center justify-center gap-1.5 ${
+                  isDark ? 'bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300' : 'bg-cyan-800 hover:bg-cyan-900 text-white'
+                }`}
+              >
+                <Icon name="plus" className="w-3.5 h-3.5 stroke-[3]" /> ดื่มน้ำ +250 มล.
+              </button>
+            </div>
+
+          </div>
+
+          {/* Patient Card & Ruler */}
+          <div className={`p-6 rounded-3xl shadow-xl border space-y-4 ${
+            isDark ? 'bg-slate-900/90 text-white border-slate-700' : 'bg-white text-slate-900 border-slate-300'
+          }`}>
+            <div className="flex items-center justify-between">
+              <span className={`text-xs font-mono font-bold ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>id: 5523478</span>
+              <button 
+                onClick={() => {
+                  setActiveTab('telemedicine');
+                  showToast('เปิดการนัดหมายแพทย์กับ Dr Smith');
+                }}
+                className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${
+                  isDark ? 'bg-white text-slate-900 hover:bg-lime-400' : 'bg-slate-900 text-white hover:bg-slate-800'
+                }`}
+              >
+                <Icon name="arrowUpRight" className="w-4 h-4 stroke-[2.5]" />
+              </button>
+            </div>
+
+            <div className="grid grid-cols-3 gap-3 text-xs border-b border-slate-200/50 dark:border-slate-700/50 pb-3">
+              <div>
+                <div className={`text-[10px] font-semibold ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Date & Time</div>
+                <div className={`font-bold mt-0.5 ${isDark ? 'text-white' : 'text-slate-950'}`}>5:30 pm</div>
+                <div className={`text-[11px] ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>25 Apr</div>
+              </div>
+
+              <div>
+                <div className={`text-[10px] font-semibold ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Doctor</div>
+                <div className="flex items-center gap-1.5 mt-0.5">
+                  <img src="https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=80" alt="Doctor" className="w-5 h-5 rounded-full object-cover" />
+                  <span className={`font-bold ${isDark ? 'text-white' : 'text-slate-950'}`}>Dr Smith</span>
+                </div>
+              </div>
+
+              <div>
+                <div className={`text-[10px] font-semibold ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Medical card</div>
+                <div className={`font-bold mt-0.5 ${isDark ? 'text-white' : 'text-slate-950'}`}>No Card</div>
+              </div>
+            </div>
+
+            {/* Ruler Slider */}
+            <div>
+              <div className="flex justify-between text-[10px] px-1 font-mono">
+                {[2, 3, 4, 5, 6, 7, 8, 9, 10].map(n => (
+                  <button 
+                    key={n} 
+                    onClick={() => {
+                      setPatientRulerVal(n);
+                      showToast(`ปรับระดับความพร้อมของร่างกายเป็น: ${n}/10`);
+                    }}
+                    className={`p-1 rounded font-bold transition-all ${
+                      patientRulerVal === n 
+                        ? isDark ? 'text-lime-300 font-black scale-125' : 'text-slate-950 font-black scale-125 bg-slate-200' 
+                        : isDark ? 'text-slate-400 hover:text-white' : 'text-slate-500 hover:text-slate-900'
+                    }`}
+                  >
+                    {n}
+                  </button>
+                ))}
+              </div>
+              <div className="relative mt-2 flex items-center justify-center">
+                <input 
+                  type="range" 
+                  min="2" 
+                  max="10" 
+                  value={patientRulerVal} 
+                  onChange={(e) => setPatientRulerVal(Number(e.target.value))}
+                  className="w-full accent-slate-900 dark:accent-lime-400 cursor-pointer h-2 bg-slate-200 dark:bg-slate-700 rounded-lg"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Smart Timeline Section */}
+          <div className={`p-6 rounded-3xl border ${isDark ? 'glass-card-dark' : 'glass-card-light'}`}>
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h3 className={`text-base font-bold ${isDark ? 'text-white' : 'text-slate-950'}`}>ตารางเวลากิจกรรมประจำวัน (Smart Timeline)</h3>
+                <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>เรียงลำดับกิจกรรมและการทานยาเพื่อรักษาสมดุลระดับน้ำตาล</p>
+              </div>
+              <button 
+                onClick={() => {
+                  setActiveTab('community');
+                  showToast('เปิดหน้าจองกิจกรรมคอมมูนิตี้กีฬา');
+                }}
+                className={`text-xs font-black flex items-center gap-1 ${
+                  isDark ? 'text-lime-400 hover:underline' : 'text-slate-950 hover:underline'
+                }`}
+              >
+                <span>+ เพิ่มกิจกรรมกีฬา</span>
+              </button>
+            </div>
+
+            <div className="relative pl-6 border-l-2 border-slate-400 dark:border-slate-700 space-y-4">
+              {timeline.map((item) => (
+                <div key={item.id} className="relative group">
+                  <button 
+                    onClick={() => toggleTimeline(item.id)}
+                    className={`absolute -left-[31px] top-1 w-6 h-6 rounded-full border-2 cursor-pointer flex items-center justify-center transition-all ${
+                      item.completed 
+                        ? isDark 
+                          ? 'bg-lime-400 border-lime-400 text-slate-950 font-bold' 
+                          : 'bg-slate-950 border-slate-950 text-white font-bold'
+                        : isDark
+                          ? 'bg-slate-900 border-slate-500 text-transparent hover:border-lime-400'
+                          : 'bg-white border-slate-400 text-transparent hover:border-slate-900'
+                    }`}
+                  >
+                    <Icon name="check" className="w-3.5 h-3.5" />
+                  </button>
+
+                  <div className={`p-4 rounded-2xl border transition-all flex items-center justify-between gap-3 ${
+                    item.completed 
+                      ? 'opacity-60 bg-black/5 dark:bg-white/5 border-transparent' 
+                      : isDark
+                        ? 'bg-white/10 border-white/10 hover:border-lime-400/50'
+                        : 'bg-white border-slate-200 hover:border-slate-400 shadow-sm'
+                  }`}>
+                    <div>
+                      <span className={`text-[10px] font-black px-2 py-0.5 rounded ${
+                        isDark ? 'text-lime-300 bg-lime-400/15' : 'text-white bg-slate-900'
+                      }`}>
+                        {item.time}
+                      </span>
+                      <p className={`text-xs sm:text-sm font-bold mt-1 ${
+                        item.completed 
+                          ? 'line-through text-slate-400 dark:text-slate-500' 
+                          : isDark ? 'text-white' : 'text-slate-950'
+                      }`}>
+                        {item.title}
+                      </p>
+                    </div>
+                    <span className={`text-[10px] font-bold px-2.5 py-1 rounded-lg ${
+                      isDark ? 'text-slate-300 bg-black/40' : 'text-slate-700 bg-slate-100 border border-slate-200'
+                    }`}>
+                      {item.tag}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // ==========================================
+    // 2. COMMUNITY SPORTS VIEW (คอมมูนิตี้กีฬา)
+    // ==========================================
+    function CommunitySportsView({ theme, currentRegion, setCurrentRegion, showToast, setTimeline }) {
+      const isDark = theme === 'dark';
+      const [selectedSport, setSelectedSport] = useState('badminton');
+      const [selectedVenue, setSelectedVenue] = useState(null);
+      const [bookingOption, setBookingOption] = useState('community_only');
+      const [selectedTrainer, setSelectedTrainer] = useState(null);
+      const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
+      const [badmintonMode, setBadmintonMode] = useState('double');
+
+      const venues = STATIC_VENUES;
+      const thaiTrainers = STATIC_TRAINERS;
+      const hourlySlots = STATIC_HOURLY_SLOTS;
+
+      // Ensure window and container scroll to top immediately when opening popup
+      const handleSelectVenue = (v) => {
+        window.scrollTo({ top: 0, behavior: 'instant' });
+        setSelectedVenue(v);
+      };
+
+      const calculatePrice = () => {
+        if (!selectedVenue) return { venueShare: 0, trainerFee: 0, total: 0 };
+        let venueShare = 0;
+        if (selectedVenue.type === 'private') {
+          if (selectedSport === 'badminton') {
+            const players = badmintonMode === 'double' ? 4 : 2;
+            venueShare = Math.round((selectedVenue.baseCost / players) * 1.6);
+          } else {
+            venueShare = Math.round((selectedVenue.baseCost / 6) * 1.6);
+          }
+        }
+        const trainerFee = (bookingOption === 'with_trainer' && selectedTrainer) ? selectedTrainer.rate : 0;
+        return { venueShare, trainerFee, total: venueShare + trainerFee };
+      };
+
+      const prices = calculatePrice();
+
+      const handleConfirmBooking = () => {
+        if (!selectedVenue || !selectedTimeSlot) {
+          showToast('กรุณาเลือกสถานที่และช่วงเวลาที่ต้องการจอง', 'warning');
+          return;
+        }
+        if (bookingOption === 'with_trainer' && !selectedTrainer) {
+          showToast('กรุณาเลือกโค้ชผู้ฝึกสอน', 'warning');
+          return;
+        }
+
+        const bookingTitle = `${selectedSport === 'badminton' ? '🏸 แบดมินตัน' : '🏃 วิ่ง'} @ ${selectedVenue.name} (${selectedTimeSlot})`;
+        setTimeline(prev => [
+          ...prev,
+          {
+            id: Date.now(),
+            time: selectedTimeSlot.split(' - ')[0] + ' น.',
+            title: bookingTitle,
+            type: 'workout',
+            completed: false,
+            tag: `฿${prices.total}`
+          }
+        ]);
+
+        showToast(`จองคลาสสำเร็จ! ยอดชำระ ฿${prices.total} (เพิ่มลงไทม์ไลน์แล้ว)`);
+        setSelectedVenue(null);
+        setSelectedTimeSlot(null);
+        setSelectedTrainer(null);
+      };
+
+      const currentVenues = (venues[selectedSport] && venues[selectedSport][currentRegion]) || [];
+
+      return (
+        <div className="space-y-6 animate-fadeIn">
+          {/* Header */}
+          <div className="p-6 rounded-3xl bg-gradient-to-r from-blue-700 via-indigo-800 to-slate-900 border border-white/20 text-white flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-xl">
+            <div>
+              <span className="text-[10px] font-black uppercase tracking-wider bg-lime-400 text-slate-950 px-2.5 py-0.5 rounded-full">
+                Sports Community Hub
+              </span>
+              <h2 className="text-2xl font-black mt-2">ศูนย์รวมคอมมูนิตี้กีฬา & จองคลาสพร้อมโค้ช</h2>
+              <p className="text-xs text-slate-200 mt-1 max-w-xl">
+                เลือกเล่นร่วมกับสมาชิกคอมมูนิตี้ หรือเลือกเรียนแบบมีโค้ชประกบ 1 ชม. คิดค่าบริการตามจริง + ค่าสมาชิก 160% (สวนสาธารณะฟรีค่าสถานที่)
+              </p>
+            </div>
+            <div className="flex gap-2 bg-black/40 p-1.5 rounded-2xl border border-white/10">
+              <button 
+                onClick={() => setSelectedSport('badminton')}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+                  selectedSport === 'badminton' ? 'bg-lime-400 text-slate-950 shadow-md' : 'text-slate-300'
+                }`}
+              >
+                <Icon name="badminton" className="w-4 h-4" />
+                <span>แบดมินตัน</span>
+              </button>
+              <button 
+                onClick={() => setSelectedSport('running')}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+                  selectedSport === 'running' ? 'bg-lime-400 text-slate-950 shadow-md' : 'text-slate-300'
+                }`}
+              >
+                <Icon name="running" className="w-4 h-4" />
+                <span>วิ่งเพื่อสุขภาพ</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Region Switcher Pills */}
+          <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
+            {[
+              { id: 'bkk', name: '📍 กรุงเทพฯ และปริมณฑล (10+ แห่ง)' },
+              { id: 'chonburi', name: '📍 ชลบุรี / บางแสน / พัทยา (10+ แห่ง)' },
+              { id: 'chiangmai', name: '📍 เชียงใหม่ / มช. (10+ แห่ง)' }
+            ].map(p => (
+              <button
+                key={p.id}
+                onClick={() => { setCurrentRegion(p.id); setSelectedVenue(null); }}
+                className={`px-4 py-2 rounded-2xl text-xs font-bold whitespace-nowrap transition-all border ${
+                  currentRegion === p.id 
+                    ? 'bg-lime-400 text-slate-950 border-lime-400 shadow-lg shadow-lime-400/20' 
+                    : isDark 
+                      ? 'bg-slate-900 border-white/10 text-slate-400 hover:text-white' 
+                      : 'bg-white border-slate-200 text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                {p.name}
+              </button>
+            ))}
+          </div>
+
+          {/* Venues Grid */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-bold text-slate-300">เลือกสนาม / สถานที่จัดกิจกรรม ({currentVenues.length} แห่ง)</h3>
+              {selectedSport === 'badminton' && (
+                <div className="flex items-center gap-1 bg-black/30 p-1 rounded-xl text-[11px] font-bold">
+                  <span className="text-slate-400 px-1">ประเภท:</span>
+                  <button 
+                    onClick={() => setBadmintonMode('double')} 
+                    className={`px-2 py-0.5 rounded-lg ${badmintonMode === 'double' ? 'bg-lime-400 text-slate-950' : 'text-slate-400'}`}
+                  >
+                    ตีคู่ (4 คน)
+                  </button>
+                  <button 
+                    onClick={() => setBadmintonMode('single')} 
+                    className={`px-2 py-0.5 rounded-lg ${badmintonMode === 'single' ? 'bg-lime-400 text-slate-950' : 'text-slate-400'}`}
+                  >
+                    เดี่ยว (2 คน)
+                  </button>
+                </div>
+              )}
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
+              {currentVenues.map((v) => {
+                const isSelected = selectedVenue?.id === v.id;
+                let calculatedFee = 0;
+                if (v.type === 'private') {
+                  const div = selectedSport === 'badminton' ? (badmintonMode === 'double' ? 4 : 2) : 6;
+                  calculatedFee = Math.round((v.baseCost / div) * 1.6);
+                }
+
+                return (
+                  <div
+                    key={v.id}
+                    onClick={() => handleSelectVenue(v)}
+                    className={`rounded-2xl border cursor-pointer transition-all overflow-hidden flex flex-col justify-between group ${
+                      isSelected 
+                        ? 'border-lime-400 bg-lime-400/10 shadow-xl shadow-lime-400/15' 
+                        : isDark 
+                          ? 'glass-card-dark hover:border-slate-500' 
+                          : 'glass-card-light hover:border-slate-400'
+                    }`}
+                  >
+                    {/* Actual Venue Photo Thumbnail */}
+                    <div className="relative aspect-[16/9] w-full overflow-hidden bg-slate-900">
+                      <img 
+                        src={v.image} 
+                        alt={v.name} 
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90"
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = 'https://placehold.co/600x400/1e293b/a3e635?text=Aura+Sport+Venue';
+                        }}
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-black/30"></div>
+
+                      <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5">
+                        <span className={`text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full backdrop-blur-md flex items-center gap-1 ${
+                          v.type === 'public' ? 'bg-emerald-500/80 text-white' : 'bg-blue-600/80 text-white'
+                        }`}>
+                          <Icon name={selectedSport === 'badminton' ? 'badminton' : 'running'} className="w-3 h-3" />
+                          <span>{v.type === 'public' ? 'สวนสาธารณะ (ฟรี)' : 'สนามเอกชนมาตรฐาน'}</span>
+                        </span>
+                      </div>
+
+                      <div className="absolute bottom-2.5 right-2.5">
+                        <span className={`text-xs font-black px-2.5 py-1 rounded-lg backdrop-blur-md border ${
+                          isDark 
+                            ? 'text-lime-300 bg-slate-950/90 border-lime-400/30' 
+                            : 'text-white bg-slate-950/90 border-slate-700'
+                        }`}>
+                          {v.type === 'public' ? '฿0 ฟรี' : `฿${calculatedFee} / คน / ชม.`}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="p-3.5 flex flex-col justify-between flex-1">
+                      <div>
+                        <h4 className={`text-sm font-bold line-clamp-1 ${
+                          isDark ? 'text-slate-100 group-hover:text-lime-300' : 'text-slate-950 group-hover:text-blue-900'
+                        }`}>
+                          {v.name}
+                        </h4>
+                        <div className={`text-[11px] mt-1 flex items-center justify-between ${
+                          isDark ? 'text-slate-400' : 'text-slate-600'
+                        }`}>
+                          <span className="flex items-center gap-1">⏱️ {v.open}</span>
+                          <span className="flex items-center gap-1 truncate max-w-[50%]">📍 {v.loc}</span>
+                        </div>
+                      </div>
+
+                      <div className="mt-3 pt-2.5 border-t border-slate-200 dark:border-white/10 flex items-center justify-between text-[11px]">
+                        <span className={`flex items-center gap-1 font-medium ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+                          <Icon name="users" className={`w-3.5 h-3.5 ${isDark ? 'text-lime-400' : 'text-indigo-900'}`} /> สมาชิกจองแล้ว 6-12 คน
+                        </span>
+                        <span className={`font-bold flex items-center gap-0.5 ${
+                          isDark ? 'text-lime-300 group-hover:underline' : 'text-slate-950 font-black group-hover:underline'
+                        }`}>
+                          คลิกจอง <Icon name="chevronRight" className="w-3 h-3" />
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Full-Page 100% Popup for Sports Booking with Dedicated Back Button */}
+          {selectedVenue && (
+            <div 
+              className={`fixed inset-0 z-50 flex flex-col h-screen w-screen overflow-hidden transition-all duration-300 animate-fadeIn ${
+                isDark ? 'bg-slate-950 text-white' : 'bg-slate-50 text-slate-900'
+              }`}
+            >
+              {/* Frozen Fixed Top Header with Back & Next/Action Buttons */}
+              <div className={`flex-shrink-0 z-30 px-4 sm:px-8 py-3.5 backdrop-blur-2xl border-b flex items-center justify-between shadow-md ${
+                isDark ? 'bg-slate-950/95 border-slate-800' : 'bg-white/95 border-slate-200'
+              }`}>
+                <button 
+                  onClick={() => setSelectedVenue(null)}
+                  className={`flex items-center gap-1.5 px-3.5 py-2 rounded-2xl text-xs font-black transition-all shadow-sm ${
+                    isDark 
+                      ? 'bg-slate-800 text-slate-200 hover:bg-slate-700 hover:text-white' 
+                      : 'bg-slate-200 text-slate-800 hover:bg-slate-300'
+                  }`}
+                >
+                  <Icon name="chevronLeft" className="w-4 h-4 stroke-[3]" />
+                  <span>ย้อนกลับ</span>
+                </button>
+
+                <div className="text-center">
+                  <span className="text-[10px] font-black tracking-wider uppercase text-lime-400 bg-lime-400/15 px-2.5 py-0.5 rounded-full border border-lime-400/30">
+                    จองคลาสคอมมูนิตี้
+                  </span>
+                  <div className="text-xs sm:text-sm font-black truncate max-w-[180px] sm:max-w-xs">{selectedVenue.name}</div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <button 
+                    onClick={handleConfirmBooking}
+                    className="hidden sm:flex items-center gap-1 px-3.5 py-2 bg-lime-400 hover:bg-lime-500 text-slate-950 font-black text-xs rounded-2xl shadow-md transition-all"
+                  >
+                    <span>ถัดไป</span>
+                    <Icon name="chevronRight" className="w-3.5 h-3.5 stroke-[3]" />
+                  </button>
+                  <button 
+                    onClick={() => setSelectedVenue(null)} 
+                    className="p-2 rounded-2xl hover:bg-white/10 text-slate-400 hover:text-white"
+                    title="ปิด"
+                  >
+                    <Icon name="xCircle" className="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Main Full Page Independently Scrollable Body */}
+              <div 
+                ref={(el) => { if (el) el.scrollTop = 0; }}
+                className="flex-1 overflow-y-auto max-w-4xl w-full mx-auto p-4 sm:p-8 space-y-6"
+              >
+                
+                {/* Venue Hero Banner */}
+                <div className="relative rounded-3xl overflow-hidden aspect-[21/9] sm:aspect-[24/9] bg-slate-900 border border-white/10 shadow-2xl">
+                  <img 
+                    src={selectedVenue.image} 
+                    alt={selectedVenue.name} 
+                    className="w-full h-full object-cover opacity-85"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent flex items-end p-5 sm:p-6">
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <span className="px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase bg-lime-400 text-slate-950">
+                          {selectedSport === 'badminton' ? '🏸 แบดมินตัน' : '🏃 วิ่งเพื่อสุขภาพ'}
+                        </span>
+                        <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-black/60 text-white backdrop-blur-md">
+                          {selectedVenue.type === 'public' ? 'สวนสาธารณะ (ฟรีค่าสถานที่)' : 'สนามเอกชนมาตรฐาน'}
+                        </span>
+                      </div>
+                      <h2 className="text-xl sm:text-2xl font-black text-white">{selectedVenue.name}</h2>
+                      <p className="text-xs text-slate-300">📍 {selectedVenue.loc} • ⏱️ เวลาทำการ {selectedVenue.open}</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Step 1: Choice of Participation */}
+                <div className="space-y-2.5">
+                  <label className={`text-xs font-black uppercase tracking-wider ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
+                    1. เลือกรูปแบบการเข้าร่วม:
+                  </label>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                    <div 
+                      onClick={() => setBookingOption('community_only')}
+                      className={`p-4 sm:p-5 rounded-3xl border-2 cursor-pointer transition-all flex flex-col justify-between ${
+                        bookingOption === 'community_only' 
+                          ? 'border-lime-400 bg-lime-400/10 shadow-lg shadow-lime-400/10' 
+                          : isDark ? 'border-slate-800 bg-slate-900/60' : 'border-slate-200 bg-white'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="font-extrabold text-sm">เข้าร่วมกลุ่มคอมมูนิตี้อย่างเดียว</span>
+                        <span className="text-lime-400 font-black text-base">฿{prices.venueShare}</span>
+                      </div>
+                      <p className="text-xs text-slate-400 mt-2">
+                        เล่นและซ้อมร่วมกับเพื่อนๆ สมาชิกในคลับ (รวมค่าแชร์สนาม + บริการระบบ 160%)
+                      </p>
+                    </div>
+
+                    <div 
+                      onClick={() => setBookingOption('with_trainer')}
+                      className={`p-4 sm:p-5 rounded-3xl border-2 cursor-pointer transition-all flex flex-col justify-between ${
+                        bookingOption === 'with_trainer' 
+                          ? 'border-lime-400 bg-lime-400/10 shadow-lg shadow-lime-400/10' 
+                          : isDark ? 'border-slate-800 bg-slate-900/60' : 'border-slate-200 bg-white'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="font-extrabold text-sm">เข้าร่วมกลุ่ม + โค้ชประกบ 1 ชม.</span>
+                        <span className="text-lime-400 font-black text-base">+ ค่าโค้ชตามเรท</span>
+                      </div>
+                      <p className="text-xs text-slate-400 mt-2">
+                        มีเทรนเนอร์มืออาชีพดูแลตัวต่อตัวตลอด 1 ชั่วโมง พร้อมคำแนะนำสรีระและการฝึก
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Step 2: Trainer Selection */}
+                {bookingOption === 'with_trainer' && (
+                  <div className="space-y-2.5 animate-fadeIn">
+                    <label className={`text-xs font-black uppercase tracking-wider ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
+                      2. เลือกโค้ชเทรนเนอร์ชาวไทย (7 ท่าน):
+                    </label>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2.5">
+                      {thaiTrainers.map((t) => (
+                        <div 
+                          key={t.id}
+                          onClick={() => setSelectedTrainer(t)}
+                          className={`p-3 rounded-2xl border-2 text-center cursor-pointer transition-all ${
+                            selectedTrainer?.id === t.id 
+                              ? 'border-lime-400 bg-lime-400/20 shadow-md scale-102' 
+                              : isDark ? 'border-slate-800 bg-slate-900/60 hover:border-slate-700' : 'border-slate-200 bg-white hover:border-slate-300'
+                          }`}
+                        >
+                          <img src={t.img} alt={t.name} className="w-14 h-14 rounded-2xl object-cover mx-auto border-2 border-white/20 shadow-sm" />
+                          <div className="text-xs font-extrabold mt-2 truncate">{t.name}</div>
+                          <div className="text-[10px] text-slate-400">{t.exp}</div>
+                          <div className="text-[11px] font-black text-lime-400 mt-1">฿{t.rate}/ชม.</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Step 3: Slots */}
+                <div className="space-y-2.5">
+                  <label className={`text-xs font-black uppercase tracking-wider ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
+                    {bookingOption === 'with_trainer' ? '3.' : '2.'} เลือกรอบเวลา (วันธรรมดา 16:00 - 24:00 น.):
+                  </label>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                    {hourlySlots.map((slot) => (
+                      <button
+                        key={slot}
+                        onClick={() => setSelectedTimeSlot(slot)}
+                        className={`p-3 rounded-2xl text-xs font-extrabold border-2 transition-all ${
+                          selectedTimeSlot === slot 
+                            ? 'border-lime-400 bg-lime-400 text-slate-950 font-black shadow-lg shadow-lime-400/20 scale-102' 
+                            : isDark ? 'border-slate-800 bg-slate-900/60 text-slate-300 hover:border-slate-700' : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300'
+                        }`}
+                      >
+                        {slot}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+              </div>
+
+              {/* Frozen Fixed Bottom Action/Navigation Bar */}
+              <div className={`flex-shrink-0 p-4 sm:p-5 border-t backdrop-blur-xl z-30 shadow-2xl ${
+                isDark ? 'bg-slate-950/95 border-slate-800' : 'bg-white/95 border-slate-200'
+              }`}>
+                <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+                  <div className="text-left w-full sm:w-auto">
+                    <div className="text-[11px] text-slate-400 font-medium">ยอดชำระสุทธิ (รวมค่าสถานที่ & โค้ช):</div>
+                    <div className="text-2xl font-black text-lime-400">
+                      ฿{prices.total} <span className="text-xs text-slate-400 font-normal">/ 1 ชั่วโมง</span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2.5 w-full sm:w-auto">
+                    <button 
+                      onClick={() => setSelectedVenue(null)}
+                      className={`px-5 py-3 rounded-2xl text-xs font-bold transition-all border ${
+                        isDark ? 'border-slate-700 text-slate-300 hover:bg-white/10' : 'border-slate-300 text-slate-700 hover:bg-slate-100'
+                      }`}
+                    >
+                      ยกเลิก
+                    </button>
+
+                    <button 
+                      onClick={handleConfirmBooking}
+                      className="flex-1 sm:flex-none px-8 py-3.5 bg-lime-400 hover:bg-lime-500 text-slate-950 font-black text-xs rounded-2xl shadow-xl shadow-lime-400/25 transition-all flex items-center justify-center gap-2"
+                    >
+                      <Icon name="check" className="w-4 h-4 stroke-[3]" /> ยืนยันการจองคลาส
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // ==========================================
+    // 3. FITNESS & 3D BODY SCAN VIEW (สแกน 3D)
+    // ==========================================
+    function FitnessBodyScanView({ theme, userStats, setUserStats, showToast, setActiveTab }) {
+      const isDark = theme === 'dark';
+      const [scanning, setScanning] = useState(false);
+      const [scanProgress, setScanProgress] = useState(0);
+      const [scanComplete, setScanComplete] = useState(true);
+
+      // Course Study State
+      const [fitnessSubTab, setFitnessSubTab] = useState('courses'); // 'courses' | 'workouts' | 'progress'
+      const [courseCategory, setCourseCategory] = useState('ทั้งหมด');
+      const [selectedCourse, setSelectedCourse] = useState(null);
+      const [selectedWorkout, setSelectedWorkout] = useState(null);
+      const [purchasedCourseIds, setPurchasedCourseIds] = useState([1]); // Course 1 demo unlocked
+      const [paymentStep, setPaymentStep] = useState('details'); // 'details' | 'checkout' | 'unlocked'
+
+      const paidCourses = STATIC_PAID_COURSES;
+      const freeWorkouts = STATIC_FREE_WORKOUTS;
+
+      const handleStartScan = () => {
+        setScanning(true);
+        setScanProgress(0);
+        setScanComplete(false);
+
+        const interval = setInterval(() => {
+          setScanProgress((prev) => {
+            if (prev >= 100) {
+              clearInterval(interval);
+              setScanning(false);
+              setScanComplete(true);
+              setUserStats(s => ({ ...s, lastBodyFat: 18.9, muscleMass: 42.8 }));
+              showToast('สแกนสรีระ AI 3D สำเร็จ! อัปเดตสัดส่วนไขมันและกล้ามเนื้อแล้ว');
+              return 100;
+            }
+            return prev + 25;
+          });
+        }, 500);
+      };
+
+      const handlePurchaseCourse = (courseId) => {
+        if (!purchasedCourseIds.includes(courseId)) {
+          setPurchasedCourseIds(prev => [...prev, courseId]);
+        }
+        setPaymentStep('unlocked');
+        showToast('ชำระเงินสำเร็จ! ปลดล็อกคอร์สเรียนเรียบร้อยแล้ว 🎉');
+      };
+
+      const filteredCourses = paidCourses.filter(c => courseCategory === 'ทั้งหมด' || c.category === courseCategory);
+
+      return (
+        <div className="space-y-6 animate-fadeIn">
+          {/* Futuristic Anatomical Scan Card (Inspired by reference pic 1) */}
+          <div className="p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-blue-900 via-indigo-950 to-slate-950 border border-white/20 text-white relative overflow-hidden shadow-2xl">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+              
+              {/* Vision Camera Window */}
+              <div className="aspect-[4/3] rounded-2xl bg-slate-900/80 border-2 border-lime-400/40 relative flex flex-col items-center justify-center p-4 overflow-hidden">
+                {scanning ? (
+                  <div className="text-center space-y-3">
+                    <div className="w-16 h-16 border-4 border-lime-400 border-t-transparent rounded-full animate-spin mx-auto"></div>
+                    <div className="text-lime-400 font-mono text-sm tracking-widest uppercase animate-pulse">
+                      ระบบ AI กำลังวิเคราะห์สัดส่วน... {scanProgress}%
+                    </div>
+                    <p className="text-xs text-slate-400">ประมวลผลความหนาแน่นชั้นไขมันต้นขาและหน้าท้อง...</p>
+                  </div>
+                ) : (
+                  <div className="text-center space-y-4">
+                    <div className="w-24 h-36 border-2 border-dashed border-lime-400/60 rounded-2xl mx-auto flex flex-col justify-between p-2 relative animate-pulse">
+                      <span className="text-[9px] bg-lime-400/20 text-lime-300 font-mono px-1 rounded self-center">AI Sensor ON</span>
+                      <Icon name="activity" className="w-7 h-7 text-lime-400 self-center" />
+                      <span className="text-[9px] text-slate-400 font-mono">ยืนในกรอบ</span>
+                    </div>
+                    <button 
+                      onClick={handleStartScan}
+                      className="px-6 py-2.5 bg-lime-400 text-slate-950 font-black text-xs rounded-xl shadow-lg hover:bg-lime-500 transition-all flex items-center gap-2 mx-auto"
+                    >
+                      <Icon name="camera" className="w-4 h-4" /> เริ่มสแกนโครงร่าง 3D AI
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Metrics */}
+              <div className="space-y-4">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-lime-400 bg-lime-400/10 px-2.5 py-1 rounded-full border border-lime-400/20">
+                  AI Computer Vision Biomarkers
+                </span>
+                <h3 className="text-2xl font-black">ผลวิเคราะห์สรีระและมวลไขมัน 3D</h3>
+                <p className="text-xs text-slate-300">
+                  ระบบจำลองชั้นไขมันใต้ผิวหนัง (Subcutaneous Fat) บริเวณหน้าท้อง สะโพก และต้นขา พร้อมประเมินคะแนนความกระชับ
+                </p>
+
+                <div className="grid grid-cols-2 gap-3 pt-2">
+                  <div className="p-4 rounded-2xl bg-white/5 border border-white/10">
+                    <div className="text-[11px] text-slate-400">สัดส่วนไขมัน (Body Fat)</div>
+                    <div className="text-2xl font-black text-lime-400">{userStats.lastBodyFat}%</div>
+                    <div className="text-[10px] text-emerald-400">↓ ลดลง -0.5% ในสัปดาห์นี้</div>
+                  </div>
+
+                  <div className="p-4 rounded-2xl bg-white/5 border border-white/10">
+                    <div className="text-[11px] text-slate-400">มวลกล้ามเนื้อ (Muscle)</div>
+                    <div className="text-2xl font-black text-blue-400">{userStats.muscleMass} กก.</div>
+                    <div className="text-[10px] text-blue-300">↑ เพิ่มขึ้น +0.3 กก.</div>
+                  </div>
+                </div>
+
+                <div className="p-3.5 rounded-2xl bg-white/5 border border-white/10 text-xs space-y-1.5">
+                  <div className="font-semibold text-slate-300 flex items-center justify-between">
+                    <span>โซนไขมันสะสมเป้าหมาย (Heatmap Zone):</span>
+                    <span className="text-lime-400 font-bold">คะแนนสรีระ 88/100</span>
+                  </div>
+                  <div className="flex justify-between text-[11px] text-slate-400">
+                    <span>ไขมันสะสมต้นขาด้านใน</span>
+                    <span className="text-lime-400 font-bold">ปานกลาง (กำลังลดลงต่อเนื่อง)</span>
+                  </div>
+                  <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                    <div className="bg-gradient-to-r from-lime-400 to-emerald-400 h-full w-[45%]"></div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          {/* ==================================================== */}
+          {/* HEALTHY COURSE STUDY (คอร์สเรียนสุขภาพ & การเรียนรู้ออนไลน์) */}
+          {/* ==================================================== */}
+          <div className="space-y-5">
+            {/* Sub-Tabs Header */}
+            <div className={`p-4 rounded-3xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
+              isDark ? 'glass-card-dark' : 'glass-card-light'
+            }`}>
+              <div>
+                <h3 className="text-lg font-black flex items-center gap-2">
+                  <Icon name="award" className="w-5 h-5 text-lime-400" />
+                  Healthy Course Study & คอร์สเรียนสุขภาพ
+                </h3>
+                <p className="text-xs text-slate-400">
+                  โปรแกรมออกกำลังกายและบทเรียนสุขภาพออกแบบโดยแพทย์และโค้ชมืออาชีพ
+                </p>
+              </div>
+
+              <div className="flex bg-black/30 p-1 rounded-2xl border border-white/10 self-start sm:self-center">
+                <button
+                  onClick={() => setFitnessSubTab('courses')}
+                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+                    fitnessSubTab === 'courses' 
+                      ? 'bg-lime-400 text-slate-950 font-black shadow-md' 
+                      : 'text-slate-300 hover:text-white'
+                  }`}
+                >
+                  <Icon name="award" className="w-3.5 h-3.5" />
+                  คอร์สพรีเมียม ({paidCourses.length})
+                </button>
+                <button
+                  onClick={() => setFitnessSubTab('workouts')}
+                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+                    fitnessSubTab === 'workouts' 
+                      ? 'bg-lime-400 text-slate-950 font-black shadow-md' 
+                      : 'text-slate-300 hover:text-white'
+                  }`}
+                >
+                  <Icon name="play" className="w-3.5 h-3.5" />
+                  คลิปฝึกซ้อมฟรี ({freeWorkouts.length})
+                </button>
+                <button
+                  onClick={() => setFitnessSubTab('progress')}
+                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+                    fitnessSubTab === 'progress' 
+                      ? 'bg-lime-400 text-slate-950 font-black shadow-md' 
+                      : 'text-slate-300 hover:text-white'
+                  }`}
+                >
+                  <Icon name="checkCircle" className="w-3.5 h-3.5" />
+                  ใบประกาศ
+                </button>
+              </div>
+            </div>
+
+            {/* SUB-TAB 1: PAID MASTERCLASSES */}
+            {fitnessSubTab === 'courses' && (
+              <div className="space-y-4">
+                {/* Categories */}
+                <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
+                  {['ทั้งหมด', 'ลดน้ำหนัก & กระชับสัดส่วน', 'สร้างกล้ามเนื้อ', 'ออฟฟิศซินโดรม & ยืดเหยียด'].map((cat) => (
+                    <button
+                      key={cat}
+                      onClick={() => setCourseCategory(cat)}
+                      className={`px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all border ${
+                        courseCategory === cat 
+                          ? 'bg-lime-400 text-slate-950 border-lime-400 font-black shadow-md' 
+                          : isDark 
+                            ? 'bg-white/5 border-white/10 text-slate-400 hover:text-white' 
+                            : 'bg-white border-slate-200 text-slate-600 hover:text-slate-900'
+                      }`}
+                    >
+                      {cat}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Courses Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {filteredCourses.map((course) => {
+                    const isPurchased = purchasedCourseIds.includes(course.id);
+                    return (
+                      <div 
+                        key={course.id}
+                        className={`rounded-3xl overflow-hidden border flex flex-col justify-between transition-all group ${
+                          isDark 
+                            ? 'glass-card-dark border-white/10 hover:border-lime-400/50 hover:shadow-xl' 
+                            : 'glass-card-light border-slate-200 hover:border-indigo-400 hover:shadow-lg'
+                        }`}
+                      >
+                        <div className="relative aspect-[16/10] overflow-hidden bg-slate-900">
+                          <img 
+                            src={course.thumb} 
+                            alt={course.title} 
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-transparent to-black/30"></div>
+
+                          <div className="absolute top-3 left-3 flex items-center gap-1.5">
+                            <span className="bg-lime-400 text-slate-950 text-[10px] font-black px-2.5 py-0.5 rounded-full shadow-md flex items-center gap-1">
+                              <Icon name="sparkles" className="w-3 h-3 text-slate-950" /> คอร์สพรีเมียม
+                            </span>
+                            {isPurchased && (
+                              <span className="bg-emerald-500 text-white text-[10px] font-black px-2.5 py-0.5 rounded-full shadow-md flex items-center gap-1">
+                                <Icon name="check" className="w-3 h-3" /> ซื้อแล้ว
+                              </span>
+                            )}
+                          </div>
+
+                          <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-white text-[11px]">
+                            <span className="bg-slate-950/70 backdrop-blur-sm px-2 py-0.5 rounded font-medium">
+                              ⏱️ {course.duration}
+                            </span>
+                            <span className="bg-slate-950/70 backdrop-blur-sm px-2 py-0.5 rounded font-bold text-amber-300">
+                              ⭐ {course.rating} ({course.reviewsCount})
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="p-4 flex-1 flex flex-col justify-between space-y-3">
+                          <div>
+                            <span className="text-[10px] font-extrabold uppercase tracking-wider text-lime-400 bg-lime-400/10 px-2 py-0.5 rounded">
+                              {course.category}
+                            </span>
+                            <h4 className="text-sm font-bold mt-2 leading-snug line-clamp-2">{course.title}</h4>
+                            <p className="text-[11px] text-slate-400 mt-1">ผู้สอน: <span className="font-semibold text-slate-300">{course.instructor}</span></p>
+                            
+                            <div className="mt-2.5 p-2.5 bg-black/20 rounded-xl border border-white/5 text-[11px] text-slate-300">
+                              <span className="font-bold text-lime-300">🎯 ผลลัพธ์: </span>
+                              <span>{course.targetResult}</span>
+                            </div>
+                          </div>
+
+                          <div className="pt-3 border-t border-white/10 flex items-center justify-between">
+                            <div>
+                              <div className="text-[10px] text-slate-400 line-through">฿{course.originalPrice.toLocaleString()}</div>
+                              <div className="text-lg font-black text-lime-400">
+                                ฿{course.price.toLocaleString()} <span className="text-[10px] font-normal text-slate-400">/ ตลอดชีพ</span>
+                              </div>
+                            </div>
+
+                            <button
+                              onClick={() => {
+                                setSelectedCourse(course);
+                                setPaymentStep(isPurchased ? 'unlocked' : 'details');
+                              }}
+                              className={`px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center gap-1 ${
+                                isPurchased 
+                                  ? 'bg-slate-800 text-white hover:bg-slate-700' 
+                                  : 'bg-lime-400 text-slate-950 hover:bg-lime-500 shadow-lg shadow-lime-400/20'
+                              }`}
+                            >
+                              {isPurchased ? 'เข้าเรียน' : 'ดูบทเรียน'}
+                              <Icon name="chevronRight" className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* SUB-TAB 2: FREE GUIDED WORKOUTS */}
+            {fitnessSubTab === 'workouts' && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {freeWorkouts.map((workout) => (
+                  <div 
+                    key={workout.id}
+                    className={`rounded-3xl overflow-hidden border flex flex-col justify-between group transition-all ${
+                      isDark ? 'glass-card-dark border-white/10' : 'glass-card-light border-slate-200'
+                    }`}
+                  >
+                    <div className="relative aspect-video overflow-hidden bg-slate-900">
+                      <img 
+                        src={workout.thumb} 
+                        alt={workout.title} 
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-4 justify-between">
+                        <span className="text-xs font-bold text-white bg-black/50 backdrop-blur-md px-2.5 py-1 rounded-lg">
+                          ⏱️ {workout.duration} • 🔥 {workout.cal}
+                        </span>
+                        <button 
+                          onClick={() => setSelectedWorkout(workout)}
+                          className="p-3 bg-lime-400 hover:bg-lime-500 text-slate-950 rounded-full shadow-lg transition-all transform hover:scale-110"
+                        >
+                          <Icon name="play" className="w-4 h-4 fill-slate-950 ml-0.5" />
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="p-4 flex-1 flex flex-col justify-between">
+                      <div>
+                        <div className="text-[10px] font-bold text-lime-400 uppercase tracking-wide">{workout.level}</div>
+                        <h4 className="text-sm font-bold mt-1">{workout.title}</h4>
+                        <p className="text-xs text-slate-400 mt-0.5">ผู้ฝึกสอน: {workout.instructor}</p>
+                      </div>
+
+                      <button 
+                        onClick={() => setSelectedWorkout(workout)}
+                        className="mt-3 w-full py-2 bg-white/10 hover:bg-white/20 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1.5"
+                      >
+                        <Icon name="play" className="w-3.5 h-3.5 text-lime-400" /> เริ่มดูคลิปสาธิตท่าทาง
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* SUB-TAB 3: PROGRESS & CERTIFICATES */}
+            {fitnessSubTab === 'progress' && (
+              <div className={`p-6 rounded-3xl border space-y-4 ${
+                isDark ? 'glass-card-dark' : 'glass-card-light'
+              }`}>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h4 className="text-base font-bold flex items-center gap-2">
+                      <Icon name="award" className="w-5 h-5 text-lime-400" />
+                      ความคืบหน้าการเรียนรู้ & ใบประกาศนียบัตร
+                    </h4>
+                    <p className="text-xs text-slate-400">สะสมชั่วโมงการเรียนรู้และทำแบบทดสอบเพื่อรับเกียรติบัตรสุขภาพ</p>
+                  </div>
+                  <span className="text-xs font-black text-lime-400 bg-lime-400/10 px-3 py-1.5 rounded-xl border border-lime-400/20">
+                    สำเร็จ 1/6 คอร์ส
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div className="p-4 rounded-2xl bg-white/5 border border-white/10 text-center">
+                    <div className="text-xs text-slate-400">ชั่วโมงสะสม</div>
+                    <div className="text-2xl font-black text-lime-400 mt-1">14.5 ชม.</div>
+                    <div className="text-[10px] text-slate-400">จากเป้าหมาย 20 ชม.</div>
+                  </div>
+                  <div className="p-4 rounded-2xl bg-white/5 border border-white/10 text-center">
+                    <div className="text-xs text-slate-400">แคลอรีที่เผาผลาญ</div>
+                    <div className="text-2xl font-black text-amber-300 mt-1">3,420 kcal</div>
+                    <div className="text-[10px] text-slate-400">ผ่านการฝึกปฏิบัติ</div>
+                  </div>
+                  <div className="p-4 rounded-2xl bg-white/5 border border-white/10 text-center">
+                    <div className="text-xs text-slate-400">เกียรติบัตรที่ได้รับ</div>
+                    <div className="text-2xl font-black text-emerald-400 mt-1">1 ใบ</div>
+                    <div className="text-[10px] text-emerald-300">Aura Core Specialist</div>
+                  </div>
+                </div>
+
+                <div className="p-4 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-xl bg-lime-400/20 text-lime-400 flex items-center justify-center font-bold">
+                      🏆
+                    </div>
+                    <div>
+                      <div className="text-xs font-bold text-white">Certificate: 4-Week Lower Body Sculpt</div>
+                      <div className="text-[11px] text-slate-400">ออกให้เมื่อ 15 ต.ค. 2026 • รหัสรับรอง AURA-88231</div>
+                    </div>
+                  </div>
+                  <button 
+                    onClick={() => showToast('ดาวน์โหลดไฟล์เกียรติบัตร PDF เรียบร้อย 📄')}
+                    className="px-3.5 py-2 bg-lime-400 text-slate-950 font-black text-xs rounded-xl hover:bg-lime-500 transition-all"
+                  >
+                    ดาวน์โหลด PDF
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* COURSE CHECKOUT / DETAIL MODAL */}
+          {selectedCourse && (
+            <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+              <div className="bg-slate-900 border border-white/20 rounded-3xl max-w-lg w-full p-6 space-y-4 shadow-2xl relative text-white my-6 animate-fadeIn">
+                <button 
+                  onClick={() => setSelectedCourse(null)}
+                  className="absolute top-4 right-4 p-2 bg-white/10 hover:bg-white/20 rounded-full text-slate-400 hover:text-white"
+                >
+                  <Icon name="x" className="w-4 h-4" />
+                </button>
+
+                {/* DETAILS STEP */}
+                {paymentStep === 'details' && (
+                  <div className="space-y-4">
+                    <div className="aspect-video rounded-2xl overflow-hidden relative">
+                      <img src={selectedCourse.thumb} alt={selectedCourse.title} className="w-full h-full object-cover opacity-80" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent flex items-end p-4">
+                        <div>
+                          <span className="text-[10px] font-black bg-lime-400 text-slate-950 px-2.5 py-0.5 rounded-full">
+                            คอร์สพรีเมียม
+                          </span>
+                          <h3 className="text-base font-bold mt-1 text-white">{selectedCourse.title}</h3>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between text-xs border-b border-white/10 pb-3">
+                      <div><span className="text-slate-400">ผู้สอน:</span> <strong className="text-white">{selectedCourse.instructor}</strong></div>
+                      <div><span className="text-slate-400">ระยะเวลา:</span> <strong className="text-lime-400">{selectedCourse.duration}</strong></div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <h4 className="text-xs font-bold uppercase text-slate-300">สารบัญบทเรียนหลัก:</h4>
+                      <div className="space-y-1.5 max-h-36 overflow-y-auto pr-1">
+                        {selectedCourse.chapters.map((ch, idx) => (
+                          <div key={idx} className="p-2 rounded-xl bg-white/5 border border-white/10 flex items-center justify-between text-xs">
+                            <span className="text-slate-200">{ch.title}</span>
+                            <span className="text-[10px] text-slate-400">{ch.duration}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="p-3.5 bg-lime-400/10 border border-lime-400/30 rounded-2xl flex items-center justify-between">
+                      <div>
+                        <div className="text-[10px] text-lime-300">ราคาพิเศษตลอดชีพ:</div>
+                        <div className="text-2xl font-black text-lime-400">
+                          ฿{selectedCourse.price.toLocaleString()} <span className="text-xs text-slate-400 font-normal line-through">฿{selectedCourse.originalPrice.toLocaleString()}</span>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => setPaymentStep('checkout')}
+                        className="px-5 py-2.5 bg-lime-400 hover:bg-lime-500 text-slate-950 text-xs font-black rounded-xl shadow-lg transition-all"
+                      >
+                        ดำเนินการสมัครเรียน
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* CHECKOUT STEP */}
+                {paymentStep === 'checkout' && (
+                  <div className="space-y-4 text-center">
+                    <div>
+                      <h3 className="text-base font-bold">ชำระเงินผ่าน PromptPay QR Code</h3>
+                      <p className="text-xs text-slate-400">สแกนจ่ายเพื่อปลดล็อกบทเรียนทันที</p>
+                    </div>
+
+                    <div className="w-40 h-40 bg-white border-2 border-slate-900 mx-auto rounded-2xl p-2 flex flex-col items-center justify-center text-slate-950 font-mono text-[10px]">
+                      <div className="w-full h-full bg-slate-950 text-lime-400 flex flex-col items-center justify-center rounded-xl p-2 font-bold">
+                        <span>[ PROMPTPAY QR ]</span>
+                        <span className="text-xs mt-1">฿{selectedCourse.price.toLocaleString()}</span>
+                        <span className="text-[8px] text-slate-400">AURA HEALTH</span>
+                      </div>
+                    </div>
+
+                    <div className="text-xs text-slate-300">ยอดชำระสุทธิ: <strong className="text-lime-400 font-black">฿{selectedCourse.price.toLocaleString()} บาท</strong></div>
+
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handlePurchaseCourse(selectedCourse.id)}
+                        className="flex-1 py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs rounded-xl shadow-lg transition-all"
+                      >
+                        ยืนยันจำลองการชำระเงินสำเร็จ
+                      </button>
+                      <button
+                        onClick={() => setPaymentStep('details')}
+                        className="px-4 py-3 bg-white/10 text-slate-300 text-xs font-bold rounded-xl"
+                      >
+                        ย้อนกลับ
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* UNLOCKED STEP */}
+                {paymentStep === 'unlocked' && (
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-2 text-emerald-400 font-bold text-sm">
+                      <Icon name="checkCircle" className="w-5 h-5" />
+                      คุณเข้าถึงเนื้อหาคอร์สเรียนนี้เรียบร้อยแล้ว!
+                    </div>
+
+                    <div className="aspect-video bg-slate-950 rounded-2xl relative overflow-hidden flex items-center justify-center border-2 border-emerald-500">
+                      <img src={selectedCourse.thumb} alt="unlocked" className="w-full h-full object-cover opacity-40" />
+                      <div className="absolute text-center space-y-2 p-4">
+                        <div className="w-12 h-12 bg-lime-400 rounded-full flex items-center justify-center mx-auto shadow-xl">
+                          <Icon name="play" className="w-5 h-5 fill-slate-950 ml-0.5" />
+                        </div>
+                        <div className="text-white font-bold text-xs">{selectedCourse.chapters[0]?.title}</div>
+                        <p className="text-[10px] text-slate-300">คลิกเพื่อเริ่มรับชมคลิปบทเรียนที่ 1</p>
+                      </div>
+                    </div>
+
+                    <div className="space-y-1.5 max-h-36 overflow-y-auto">
+                      {selectedCourse.chapters.map((ch, idx) => (
+                        <div key={idx} className="p-2.5 rounded-xl bg-lime-400/10 border border-lime-400/20 flex items-center justify-between text-xs">
+                          <span className="text-slate-200 font-medium">บทที่ {idx + 1}: {ch.title}</span>
+                          <span className="text-[10px] font-bold text-lime-400 bg-black/40 px-2 py-0.5 rounded">พร้อมเรียน</span>
+                        </div>
+                      ))}
+                    </div>
+
+                    <button
+                      onClick={() => setSelectedCourse(null)}
+                      className="w-full py-2.5 bg-lime-400 text-slate-950 font-black text-xs rounded-xl hover:bg-lime-500 transition-all"
+                    >
+                      ปิดหน้าต่าง
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* FREE WORKOUT MODAL */}
+          {selectedWorkout && (
+            <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+              <div className="bg-slate-900 border border-white/20 rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl relative text-white animate-fadeIn">
+                <button 
+                  onClick={() => setSelectedWorkout(null)}
+                  className="absolute top-4 right-4 p-2 bg-white/10 hover:bg-white/20 rounded-full text-slate-400 hover:text-white"
+                >
+                  <Icon name="x" className="w-4 h-4" />
+                </button>
+
+                <h3 className="text-base font-bold">{selectedWorkout.title}</h3>
+                
+                <div className="aspect-video bg-slate-950 rounded-2xl relative flex items-center justify-center overflow-hidden border border-white/10">
+                  <img src={selectedWorkout.thumb} alt="workout" className="w-full h-full object-cover opacity-60" />
+                  <div className="absolute text-center text-white space-y-2">
+                    <div className="w-12 h-12 bg-lime-400 rounded-full flex items-center justify-center mx-auto shadow-lg animate-pulse">
+                      <Icon name="play" className="w-5 h-5 fill-slate-950 ml-0.5" />
+                    </div>
+                    <div className="text-xs font-mono text-lime-300">วิดีโอสาธิตการเล่นท่าถูกต้องพร้อมแล้ว</div>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <h4 className="text-xs font-bold uppercase text-slate-400">ขั้นตอนการฝึกปฏิบัติ:</h4>
+                  <ul className="space-y-1.5 text-xs text-slate-300">
+                    {selectedWorkout.steps.map((step, idx) => (
+                      <li key={idx} className="flex items-center gap-2">
+                        <Icon name="checkCircle" className="w-4 h-4 text-lime-400 flex-shrink-0" />
+                        <span>{step}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <button 
+                  onClick={() => {
+                    showToast('เริ่มการออกกำลังกาย! ขอให้สนุกกับการฝึก');
+                    setSelectedWorkout(null);
+                  }}
+                  className="w-full py-2.5 bg-lime-400 hover:bg-lime-500 text-slate-950 font-black text-xs rounded-xl shadow-lg transition-all"
+                >
+                  เริ่มฝึกซ้อมทันที
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // ==========================================
+    // 4. AI FOOD SCANNER MODULE (สแกนอาหาร)
+    // ==========================================
+    function FoodScannerView({ theme, userStats, setUserStats, setTimeline, showToast }) {
+      const isDark = theme === 'dark';
+      const [analyzing, setAnalyzing] = useState(false);
+      const [analyzedFood, setAnalyzedFood] = useState(null);
+      const [foodFilter, setFoodFilter] = useState('ทั้งหมด');
+
+      const sampleFoods = STATIC_SAMPLE_FOODS;
+      const categories = ['ทั้งหมด', 'ลดไขมัน/ลีน', 'โปรตีนสูง', 'โลว์คาร์บ/คีโต', 'เมนูสุขภาพไทย'];
+
+      const filteredFoods = sampleFoods.filter(f => foodFilter === 'ทั้งหมด' || f.category === foodFilter);
+
+      const handleSelectSample = (food) => {
+        window.scrollTo({ top: 0, behavior: 'instant' });
+        setAnalyzing(true);
+        setAnalyzedFood(null);
+
+        const timer = setTimeout(() => {
+          setAnalyzing(false);
+          setAnalyzedFood(food);
+          window.scrollTo({ top: 0, behavior: 'instant' });
+        }, 1100);
+
+        return () => clearTimeout(timer);
+      };
+
+      const handleLogFood = () => {
+        if (!analyzedFood) return;
+
+        setUserStats(prev => ({
+          ...prev,
+          calories: prev.calories + analyzedFood.calories,
+          protein: prev.protein + analyzedFood.protein,
+          carbs: prev.carbs + analyzedFood.carbs,
+          fat: prev.fat + analyzedFood.fat
+        }));
+
+        setTimeline(prev => [
+          ...prev,
+          {
+            id: Date.now(),
+            time: 'เมื่อสักครู่',
+            title: `บันทึกอาหาร: ${analyzedFood.name}`,
+            type: 'food',
+            completed: true,
+            tag: `${analyzedFood.calories} kcal`
+          }
+        ]);
+
+        showToast(`บันทึก ${analyzedFood.name} (${analyzedFood.calories} kcal) ลงตารางเรียบร้อย!`);
+        setAnalyzedFood(null);
+      };
+
+      return (
+        <div className="space-y-6 animate-fadeIn">
+          {/* Top Banner */}
+          <div className="bg-gradient-to-r from-emerald-600 via-teal-700 to-indigo-800 rounded-3xl p-6 text-white shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border border-white/20">
+            <div>
+              <span className="bg-white/20 text-xs px-3 py-1 rounded-full font-semibold uppercase tracking-wider text-lime-400 border border-lime-400/30">
+                AI Computer Vision สแกนวัตถุดิบ & โภชนาการ
+              </span>
+              <h2 className="text-2xl font-bold mt-2">สแกนถ่ายรูปอาหาร & ติดตามเมตาบอลิซึม Real-time</h2>
+              <p className="text-teal-100 text-xs mt-1 max-w-lg">
+                เพียงถ่ายรูปจานอาหาร Aura Health AI จะคำนวณแคลอรี สารอาหารหลัก (Macros) และประเมินผลกระทบต่อระดับน้ำตาลในเลือดให้อัตโนมัติ
+              </p>
+            </div>
+            <div className="p-3 bg-white/10 rounded-2xl border border-white/20">
+              <Icon name="camera" className="w-10 h-10 text-lime-400" />
+            </div>
+          </div>
+
+          {/* Category Filter Chips */}
+          <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setFoodFilter(cat)}
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all border ${
+                  foodFilter === cat 
+                    ? 'bg-lime-400 text-slate-950 border-lime-400 font-black shadow-md' 
+                    : isDark 
+                      ? 'bg-white/5 border-white/10 text-slate-400 hover:text-white' 
+                      : 'bg-white border-slate-200 text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+
+          {/* Simulated Camera Selection (Expanded to 8 Dishes) */}
+          <div className={`rounded-3xl p-6 border transition-all space-y-4 ${
+            isDark ? 'glass-card-dark' : 'glass-card-light'
+          }`}>
+            <div className="flex items-center justify-between">
+              <h3 className="text-base font-bold flex items-center gap-2">
+                <Icon name="sparkles" className="w-4 h-4 text-lime-400" />
+                เลือกภาพถ่ายตัวอย่างเพื่อทดสอบสแกน AI ({filteredFoods.length} เมนู):
+              </h3>
+              <span className="text-xs text-slate-400 hidden sm:inline">คลิกที่การ์ดเพื่อสแกนสารอาหาร</span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {filteredFoods.map((item) => (
+                <div 
+                  key={item.id}
+                  onClick={() => handleSelectSample(item)}
+                  className={`group cursor-pointer rounded-2xl overflow-hidden border transition-all ${
+                    isDark 
+                      ? 'bg-slate-900/60 border-white/10 hover:border-lime-400 hover:shadow-xl hover:shadow-lime-400/10' 
+                      : 'bg-white border-slate-200 hover:border-lime-400 hover:shadow-md'
+                  }`}
+                >
+                  <div className="aspect-[16/10] overflow-hidden relative">
+                    <img 
+                      src={item.image} 
+                      alt={item.name} 
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent"></div>
+                    <span className="absolute bottom-2 right-2 bg-slate-950/90 backdrop-blur-sm text-lime-400 text-[10px] font-black px-2 py-0.5 rounded border border-white/10">
+                      {item.calories} kcal
+                    </span>
+                    <span className="absolute top-2 left-2 bg-black/60 text-white text-[9px] font-bold px-2 py-0.5 rounded-full backdrop-blur-sm">
+                      {item.category}
+                    </span>
+                  </div>
+                  <div className="p-3">
+                    <p className="text-xs font-bold group-hover:text-lime-400 transition-colors line-clamp-1">{item.name}</p>
+                    <div className="flex items-center justify-between text-[10px] text-slate-400 mt-1">
+                      <span>โปรตีน {item.protein}g</span>
+                      <span>คาร์บ {item.carbs}g</span>
+                      <span>ไขมัน {item.fat}g</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Analyzing Loading State */}
+          {analyzing && (
+            <div className={`rounded-3xl p-8 border text-center space-y-3 ${
+              isDark ? 'glass-card-dark' : 'glass-card-light'
+            }`}>
+              <div className="w-12 h-12 border-4 border-lime-400 border-t-transparent rounded-full animate-spin mx-auto"></div>
+              <p className="text-sm font-bold">ระบบ AI กำลังวิเคราะห์องค์ประกอบอาหารในภาพ...</p>
+              <p className="text-xs text-slate-400">ประมวลผลดัชนีน้ำตาล (Glycemic Index) และความหนาแน่นสารอาหาร...</p>
+            </div>
+          )}
+
+          {/* Full-Page 100% Popup for Food Analysis with Dedicated Back Button */}
+          {analyzedFood && !analyzing && (
+            <div 
+              className={`fixed inset-0 z-50 flex flex-col h-screen w-screen overflow-hidden transition-all duration-300 animate-fadeIn ${
+                isDark ? 'bg-slate-950 text-white' : 'bg-slate-50 text-slate-900'
+              }`}
+            >
+              {/* Frozen Fixed Top Header with Back & Next/Action Buttons */}
+              <div className={`flex-shrink-0 z-30 px-4 sm:px-8 py-3.5 backdrop-blur-2xl border-b flex items-center justify-between shadow-md ${
+                isDark ? 'bg-slate-950/95 border-slate-800' : 'bg-white/95 border-slate-200'
+              }`}>
+                <button 
+                  onClick={() => setAnalyzedFood(null)}
+                  className={`flex items-center gap-1.5 px-3.5 py-2 rounded-2xl text-xs font-black transition-all shadow-sm ${
+                    isDark 
+                      ? 'bg-slate-800 text-slate-200 hover:bg-slate-700 hover:text-white' 
+                      : 'bg-slate-200 text-slate-800 hover:bg-slate-300'
+                  }`}
+                >
+                  <Icon name="chevronLeft" className="w-4 h-4 stroke-[3]" />
+                  <span>ย้อนกลับ</span>
+                </button>
+
+                <div className="text-center">
+                  <span className="text-[10px] font-black tracking-wider uppercase text-lime-400 bg-lime-400/15 px-2.5 py-0.5 rounded-full border border-lime-400/30">
+                    ผลวิเคราะห์ AI สำเร็จ
+                  </span>
+                  <div className="text-xs sm:text-sm font-black truncate max-w-[180px] sm:max-w-xs">{analyzedFood.name}</div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <button 
+                    onClick={handleLogFood}
+                    className="hidden sm:flex items-center gap-1 px-3.5 py-2 bg-lime-400 hover:bg-lime-500 text-slate-950 font-black text-xs rounded-2xl shadow-md transition-all"
+                  >
+                    <span>บันทึกมื้อนี้</span>
+                    <Icon name="chevronRight" className="w-3.5 h-3.5 stroke-[3]" />
+                  </button>
+                  <button 
+                    onClick={() => setAnalyzedFood(null)} 
+                    className="p-2 rounded-2xl hover:bg-white/10 text-slate-400 hover:text-white"
+                    title="ปิด"
+                  >
+                    <Icon name="xCircle" className="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Main Full Page Independently Scrollable Body */}
+              <div 
+                ref={(el) => { if (el) el.scrollTop = 0; }}
+                className="flex-1 overflow-y-auto max-w-3xl w-full mx-auto p-4 sm:p-8 space-y-6"
+              >
+                
+                {/* Food Hero Banner */}
+                <div className="relative rounded-3xl overflow-hidden aspect-[16/9] sm:aspect-[21/9] bg-slate-900 border border-white/10 shadow-2xl">
+                  <img 
+                    src={analyzedFood.image} 
+                    alt={analyzedFood.name} 
+                    className="w-full h-full object-cover opacity-90" 
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent flex items-end p-5 sm:p-6 justify-between">
+                    <div>
+                      <span className="text-[10px] font-black text-lime-400 bg-lime-400/20 border border-lime-400/40 px-2.5 py-0.5 rounded-full uppercase">
+                        {analyzedFood.category}
+                      </span>
+                      <h2 className="text-xl sm:text-2xl font-black text-white mt-1.5">{analyzedFood.name}</h2>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-3xl sm:text-4xl font-black text-lime-400">{analyzedFood.calories}</div>
+                      <div className="text-[10px] text-slate-300 uppercase font-semibold">กิโลแคลอรี (kcal)</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Macronutrients Breakdown Grid */}
+                <div className="space-y-2.5">
+                  <h3 className={`text-xs font-black uppercase tracking-wider ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
+                    สารอาหารหลักต่อมื้อ (Macronutrients):
+                  </h3>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <div className="bg-emerald-500/15 p-4 rounded-3xl border border-emerald-500/30 text-center">
+                      <div className="text-xs text-emerald-400 font-bold">โปรตีน (Protein)</div>
+                      <div className="text-2xl font-black text-emerald-300 mt-1">{analyzedFood.protein} กรัม</div>
+                      <div className="text-[10px] text-slate-400 mt-0.5">เสริมสร้างมวลกล้ามเนื้อ</div>
+                    </div>
+                    <div className="bg-indigo-500/15 p-4 rounded-3xl border border-indigo-500/30 text-center">
+                      <div className="text-xs text-indigo-400 font-bold">คาร์โบไฮเดรต</div>
+                      <div className="text-2xl font-black text-indigo-300 mt-1">{analyzedFood.carbs} กรัม</div>
+                      <div className="text-[10px] text-slate-400 mt-0.5">พลังงานสำหรับกิจกรรม</div>
+                    </div>
+                    <div className="bg-amber-500/15 p-4 rounded-3xl border border-amber-500/30 text-center">
+                      <div className="text-xs text-amber-400 font-bold">ไขมันดี</div>
+                      <div className="text-2xl font-black text-amber-300 mt-1">{analyzedFood.fat} กรัม</div>
+                      <div className="text-[10px] text-slate-400 mt-0.5">กรดไขมันไม่อิ่มตัว</div>
+                    </div>
+                    <div className="bg-cyan-500/15 p-4 rounded-3xl border border-cyan-500/30 text-center">
+                      <div className="text-xs text-cyan-400 font-bold">ดัชนีน้ำตาล (GI)</div>
+                      <div className="text-lg font-black text-cyan-300 mt-1.5">{analyzedFood.glycemicIndex}</div>
+                      <div className="text-[10px] text-slate-400 mt-0.5">ไม่กระตุ้นอินซูลิน</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* AI Metabolic Impact & Goal Alignment */}
+                <div className={`p-5 rounded-3xl border space-y-2 ${
+                  isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'
+                }`}>
+                  <div className="text-xs font-black text-lime-400 flex items-center gap-1.5 uppercase tracking-wide">
+                    <Icon name="sparkles" className="w-4 h-4" /> ผลประเมินความสอดคล้องกับเป้าหมายสุขภาพ:
+                  </div>
+                  <p className={`text-xs sm:text-sm font-medium leading-relaxed ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>
+                    {analyzedFood.alignment}
+                  </p>
+                </div>
+
+              </div>
+
+              {/* Frozen Fixed Bottom Action/Navigation Bar */}
+              <div className={`flex-shrink-0 p-4 sm:p-5 border-t backdrop-blur-xl z-30 shadow-2xl ${
+                isDark ? 'bg-slate-950/95 border-slate-800' : 'bg-white/95 border-slate-200'
+              }`}>
+                <div className="max-w-3xl mx-auto flex items-center justify-between gap-3">
+                  <button 
+                    onClick={() => setAnalyzedFood(null)}
+                    className={`px-5 py-3 rounded-2xl text-xs font-bold transition-all border ${
+                      isDark ? 'border-slate-700 text-slate-300 hover:bg-white/10' : 'border-slate-300 text-slate-700 hover:bg-slate-100'
+                    }`}
+                  >
+                    ยกเลิก
+                  </button>
+
+                  <button 
+                    onClick={handleLogFood}
+                    className="flex-1 py-3.5 bg-lime-400 hover:bg-lime-500 text-slate-950 font-black text-xs rounded-2xl shadow-xl shadow-lime-400/25 transition-all flex items-center justify-center gap-2"
+                  >
+                    <Icon name="check" className="w-4 h-4 stroke-[3]" /> บันทึกสถิติมื้อนี้ลงไทม์ไลน์
+                  </button>
+                </div>
+              </div>
+
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // ==========================================
+    // 5. MEDICATION & PHARMACY MODULE (ตารางยา) - High Contrast & Fixed Colors
+    // ==========================================
+    function MedicationTrackerView({ theme, showToast }) {
+      const isDark = theme === 'dark';
+      const [medsList, setMedsList] = useState(STATIC_DEFAULT_MEDS);
+
+      const [activeCabinetCategory, setActiveCabinetCategory] = useState('ทั้งหมด');
+      const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+      const [editingMed, setEditingMed] = useState(null);
+
+      const [newMedForm, setNewMedForm] = useState({
+        name: '',
+        category: 'ยาประจำตัว',
+        dosage: '1 เม็ด',
+        dosageAmount: 1,
+        timing: 'หลังอาหารเช้า',
+        time: '08:00 น.',
+        stock: 30,
+        minStock: 5,
+        notes: ''
+      });
+
+      const [selectedMedsForCheck, setSelectedMedsForCheck] = useState(['Metformin', 'สมุนไพรเซนต์จอห์นเวิร์ต']);
+      const [interactionResult, setInteractionResult] = useState(null);
+      const [cartCount, setCartCount] = useState(0);
+
+      const categoriesList = ['ทั้งหมด', 'ยาประจำตัว', 'ยารักษาตามอาการ', 'วิตามิน/อาหารเสริม', 'ยาทาภายนอก', 'ยาปฏิชีวนะ'];
+
+      const handleSaveMedication = (e) => {
+        e.preventDefault();
+        if (!newMedForm.name.trim()) {
+          showToast('กรุณาระบุชื่อยาหรือเวชภัณฑ์', 'warning');
+          return;
+        }
+
+        if (editingMed) {
+          setMedsList(prev => prev.map(m => m.id === editingMed.id ? { ...m, ...newMedForm } : m));
+          showToast(`อัปเดตข้อมูล ${newMedForm.name} เรียบร้อยแล้ว!`);
+          setEditingMed(null);
+        } else {
+          const createdMed = {
+            id: Date.now(),
+            ...newMedForm,
+            image: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&q=80&w=300'
+          };
+          setMedsList(prev => [createdMed, ...prev]);
+          showToast(`เพิ่ม ${newMedForm.name} ลงตารางเตือนเรียบร้อยแล้ว! 💊`);
+        }
+
+        setIsAddModalOpen(false);
+        setNewMedForm({
+          name: '',
+          category: 'ยาประจำตัว',
+          dosage: '1 เม็ด',
+          dosageAmount: 1,
+          timing: 'หลังอาหารเช้า',
+          time: '08:00 น.',
+          stock: 30,
+          minStock: 5,
+          notes: ''
+        });
+      };
+
+      const handleTakeMedication = (medId, medName, dosageAmount) => {
+        setMedsList(prev => prev.map(m => {
+          if (m.id === medId) {
+            const nextStock = Math.max(0, m.stock - (dosageAmount || 1));
+            return { ...m, stock: nextStock };
+          }
+          return m;
+        }));
+        showToast(`บันทึกการทานยา ${medName} เรียบร้อย!`);
+      };
+
+      const checkInteractions = () => {
+        if (selectedMedsForCheck.length < 2) {
+          setInteractionResult({
+            type: 'info',
+            msg: 'กรุณาเลือกตัวยาหรืออาหารเสริมอย่างน้อย 2 รายการเพื่อตรวจปฏิกิริยาระหว่างกัน'
+          });
+          return;
+        }
+
+        if (selectedMedsForCheck.includes('Metformin') && selectedMedsForCheck.includes('สมุนไพรเซนต์จอห์นเวิร์ต')) {
+          setInteractionResult({
+            type: 'warning',
+            title: 'แจ้งเตือน: พบปฏิกิริยาระหว่างยาระดับปานกลาง!',
+            msg: 'สมุนไพรเซนต์จอห์นเวิร์ตอาจส่งผลกระทบต่อประสิทธิภาพการคุมระดับน้ำตาลของ Metformin ควรปรึกษาเภสัชกรก่อนรับประทานร่วมกัน'
+          });
+        } else {
+          setInteractionResult({
+            type: 'safe',
+            title: 'ปลอดภัย: ไม่พบอันตรกิริยารุนแรง',
+            msg: 'จากการตรวจสอบ ยาและอาหารเสริมชุดนี้สามารถทานร่วมกันได้ตามขนาดการใช้งานปกติ'
+          });
+        }
+      };
+
+      const handleAddToCart = (itemName) => {
+        setCartCount(prev => prev + 1);
+        showToast(`เพิ่ม ${itemName} ลงตะกร้าส่งด่วน 1 ชม. แล้ว! 🛒`);
+      };
+
+      const filteredMeds = medsList.filter(m => activeCabinetCategory === 'ทั้งหมด' || m.category === activeCabinetCategory);
+
+      return (
+        <div className="space-y-6 animate-fadeIn">
+          {/* Header Banner */}
+          <div className="bg-gradient-to-r from-teal-800 via-indigo-900 to-slate-900 rounded-3xl p-6 text-white shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border border-white/20">
+            <div>
+              <span className="bg-lime-400 text-slate-950 text-xs px-3 py-1 rounded-full font-black uppercase tracking-wider">
+                Smart Medication Schedule
+              </span>
+              <h2 className="text-2xl font-bold mt-2">ระบบเตือนทานยาและร้านค้าเวชภัณฑ์อัจฉริยะ</h2>
+              <p className="text-teal-100 text-xs mt-1 max-w-xl">
+                ตั้งเวลาเตือนรายวัน คำนวณขนาดยา ตรวจสอบอันตรกิริยาระหว่างยา และสั่งซื้อยาส่งด่วนถึงบ้านภายใน 1 ชม.
+              </p>
+            </div>
+            <button 
+              onClick={() => {
+                setEditingMed(null);
+                setNewMedForm({
+                  name: '',
+                  category: 'ยาประจำตัว',
+                  dosage: '1 เม็ด',
+                  dosageAmount: 1,
+                  timing: 'หลังอาหารเช้า',
+                  time: '08:00 น.',
+                  stock: 30,
+                  minStock: 5,
+                  notes: ''
+                });
+                setIsAddModalOpen(true);
+              }}
+              className="px-5 py-2.5 bg-lime-400 hover:bg-lime-500 text-slate-950 font-black text-xs rounded-2xl shadow-lg transition-all flex items-center gap-1.5 whitespace-nowrap"
+            >
+              <Icon name="plus" className="w-4 h-4 stroke-[2.5]" />
+              <span>+ เพิ่มยาใหม่</span>
+            </button>
+          </div>
+
+          {/* Daily Medication Timeline - HIGH CONTRAST & LEGIBLE */}
+          <div className={`rounded-3xl p-6 border transition-all space-y-4 ${
+            isDark ? 'bg-slate-900/90 border-slate-700/80 shadow-2xl' : 'bg-white border-slate-300 shadow-xl'
+          }`}>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-700/50 pb-3">
+              <div>
+                <h3 className={`text-base font-bold flex items-center gap-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                  <Icon name="clock" className="w-5 h-5 text-lime-400" />
+                  ตารางเวลาการทานยาประจำวัน (Daily Medication Timeline)
+                </h3>
+                <p className="text-xs text-slate-400">กดบันทึก "ทานเรียบร้อย" เพื่อตัดสต็อกและบันทึกประวัติการทานยาประจำวัน</p>
+              </div>
+              <span className="text-xs font-black text-lime-400 bg-lime-400/15 px-3 py-1.5 rounded-xl border border-lime-400/30 self-start sm:self-center">
+                รวม {filteredMeds.length} รายการ
+              </span>
+            </div>
+
+            {/* Cabinet Category Chips */}
+            <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
+              {categoriesList.map(cat => (
+                <button
+                  key={cat}
+                  onClick={() => setActiveCabinetCategory(cat)}
+                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all border ${
+                    activeCabinetCategory === cat 
+                      ? 'bg-lime-400 text-slate-950 border-lime-400 font-black shadow-md' 
+                      : isDark 
+                        ? 'bg-slate-800 text-slate-300 border-slate-700 hover:text-white' 
+                        : 'bg-slate-100 text-slate-700 border-slate-300 hover:bg-slate-200'
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+
+            {/* High-Contrast Medication Cards */}
+            <div className="space-y-3">
+              {filteredMeds.map((med) => {
+                const isLowStock = med.stock <= (med.minStock || 5);
+                return (
+                  <div 
+                    key={med.id} 
+                    className={`p-4 rounded-2xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 transition-all ${
+                      isDark 
+                        ? 'bg-slate-800/90 border-slate-700 text-white hover:border-lime-400/60' 
+                        : 'bg-slate-50 border-slate-300 text-slate-900 hover:border-indigo-500 shadow-sm'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3.5">
+                      <div className="relative w-14 h-14 rounded-2xl overflow-hidden border border-slate-600 shadow-md flex-shrink-0 bg-slate-950">
+                        <img 
+                          src={med.image} 
+                          alt={med.name} 
+                          className="w-full h-full object-cover"
+                        />
+                        <span className="absolute bottom-0 inset-x-0 bg-black/80 text-[8px] text-white font-bold text-center py-0.5">
+                          ภาพจริง
+                        </span>
+                      </div>
+
+                      <div>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className={`text-sm font-extrabold ${isDark ? 'text-white' : 'text-slate-900'}`}>{med.name}</span>
+                          <span className="text-[10px] font-black text-slate-950 bg-lime-400 px-2 py-0.5 rounded shadow-sm">
+                            {med.dosage}
+                          </span>
+                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${
+                            isDark ? 'bg-indigo-900/70 text-indigo-200 border border-indigo-700' : 'bg-indigo-100 text-indigo-800 border border-indigo-200'
+                          }`}>
+                            {med.timing}
+                          </span>
+                        </div>
+                        <div className={`text-xs mt-1 flex items-center gap-2 flex-wrap font-medium ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
+                          <span>⏱️ เวลา: <strong className="text-lime-400 font-bold">{med.time}</strong></span>
+                          <span>• หมวดหมู่: <strong className={isDark ? 'text-slate-200' : 'text-slate-800'}>{med.category}</strong></span>
+                        </div>
+                        {med.notes && (
+                          <p className={`text-[11px] mt-1 line-clamp-1 font-normal ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
+                            💡 สรรพคุณ: {med.notes}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-3 self-end sm:self-center">
+                      <div className="text-right">
+                        <div className={`text-xs font-black ${isLowStock ? 'text-amber-400 font-black' : isDark ? 'text-slate-200' : 'text-slate-700'}`}>
+                          เหลือ {med.stock} หน่วย
+                        </div>
+                        {isLowStock && (
+                          <span className="text-[10px] text-amber-400 font-extrabold flex items-center justify-end gap-0.5 animate-pulse">
+                            <Icon name="alertCircle" className="w-3.5 h-3.5 text-amber-400" /> ยาใกล้หมด
+                          </span>
+                        )}
+                      </div>
+
+                      <button 
+                        onClick={() => handleTakeMedication(med.id, med.name, med.dosageAmount)}
+                        disabled={med.stock <= 0}
+                        className={`px-4 py-2 text-xs font-black rounded-xl transition-all flex items-center gap-1.5 shadow-md ${
+                          med.stock > 0 
+                            ? 'bg-lime-400 text-slate-950 hover:bg-lime-500' 
+                            : 'bg-slate-700 text-slate-400 cursor-not-allowed'
+                        }`}
+                      >
+                        <Icon name="check" className="w-3.5 h-3.5 stroke-[3]" />
+                        {med.stock > 0 ? 'ทานเรียบร้อย' : 'ยาหมดแล้ว'}
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* ADD / EDIT CUSTOM MEDICATION MODAL */}
+          {isAddModalOpen && (
+            <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+              <div className="bg-slate-900 border border-slate-700 rounded-3xl max-w-lg w-full p-6 space-y-4 shadow-2xl relative text-white my-6">
+                <button 
+                  onClick={() => setIsAddModalOpen(false)}
+                  className="absolute top-4 right-4 p-2 bg-white/10 hover:bg-white/20 rounded-full text-slate-400 hover:text-white"
+                >
+                  <Icon name="x" className="w-4 h-4" />
+                </button>
+
+                <div>
+                  <h3 className="text-base font-bold flex items-center gap-2">
+                    <Icon name="plus" className="w-5 h-5 text-lime-400" />
+                    {editingMed ? 'แก้ไขข้อมูลยา / เวชภัณฑ์' : 'เพิ่มยาใหม่เข้าตารางแจ้งเตือน'}
+                  </h3>
+                  <p className="text-xs text-slate-400">กรอกรายละเอียดตัวยา เพื่อตั้งการแจ้งเตือนรายวัน</p>
+                </div>
+
+                <form onSubmit={handleSaveMedication} className="space-y-3.5 text-xs">
+                  <div>
+                    <label className="block font-bold text-slate-200 mb-1">ชื่อยา / เวชภัณฑ์ *</label>
+                    <input 
+                      type="text" 
+                      required
+                      placeholder="เช่น Amoxicillin 500mg, วิตามินซี 1000mg"
+                      value={newMedForm.name}
+                      onChange={(e) => setNewMedForm({ ...newMedForm, name: e.target.value })}
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder-slate-400 focus:outline-none focus:border-lime-400 font-medium"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block font-bold text-slate-200 mb-1">หมวดหมู่ยา</label>
+                      <select 
+                        value={newMedForm.category}
+                        onChange={(e) => setNewMedForm({ ...newMedForm, category: e.target.value })}
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white focus:outline-none focus:border-lime-400"
+                      >
+                        <option value="ยาประจำตัว">ยาประจำตัว</option>
+                        <option value="ยารักษาตามอาการ">ยารักษาตามอาการ</option>
+                        <option value="วิตามิน/อาหารเสริม">วิตามิน/อาหารเสริม</option>
+                        <option value="ยาทาภายนอก">ยาทาภายนอก</option>
+                        <option value="ยาปฏิชีวนะ">ยาปฏิชีวนะ</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block font-bold text-slate-200 mb-1">ขนาดรับประทานต่อครั้ง</label>
+                      <input 
+                        type="text" 
+                        placeholder="เช่น 1 เม็ด, 2 แคปซูล"
+                        value={newMedForm.dosage}
+                        onChange={(e) => setNewMedForm({ ...newMedForm, dosage: e.target.value })}
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder-slate-400 focus:outline-none focus:border-lime-400"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block font-bold text-slate-200 mb-1">จังหวะเวลาการทาน</label>
+                      <select 
+                        value={newMedForm.timing}
+                        onChange={(e) => setNewMedForm({ ...newMedForm, timing: e.target.value })}
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white focus:outline-none focus:border-lime-400"
+                      >
+                        <option value="หลังอาหารเช้า">หลังอาหารเช้า</option>
+                        <option value="ก่อนอาหารเช้า">ก่อนอาหารเช้า</option>
+                        <option value="หลังอาหารเที่ยง">หลังอาหารเที่ยง</option>
+                        <option value="หลังอาหารเย็น">หลังอาหารเย็น</option>
+                        <option value="ก่อนนอน">ก่อนนอน</option>
+                        <option value="เมื่อมีอาการ">เมื่อมีอาการ</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block font-bold text-slate-200 mb-1">เวลาแจ้งเตือนรายวัน</label>
+                      <input 
+                        type="text" 
+                        placeholder="เช่น 08:00 น."
+                        value={newMedForm.time}
+                        onChange={(e) => setNewMedForm({ ...newMedForm, time: e.target.value })}
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder-slate-400 focus:outline-none focus:border-lime-400"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block font-bold text-slate-200 mb-1">จำนวนคงเหลือปัจจุบัน</label>
+                      <input 
+                        type="number" 
+                        min="1"
+                        value={newMedForm.stock}
+                        onChange={(e) => setNewMedForm({ ...newMedForm, stock: parseInt(e.target.value) || 0 })}
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white focus:outline-none focus:border-lime-400"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block font-bold text-slate-200 mb-1">เตือนเมื่อเหลือน้อยกว่า</label>
+                      <input 
+                        type="number" 
+                        min="1"
+                        value={newMedForm.minStock}
+                        onChange={(e) => setNewMedForm({ ...newMedForm, minStock: parseInt(e.target.value) || 5 })}
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white focus:outline-none focus:border-lime-400"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block font-bold text-slate-200 mb-1">สรรพคุณ / คำแนะนำเพิ่มเติม</label>
+                    <textarea 
+                      rows="2"
+                      placeholder="เช่น ทานติดต่อกันจนหมด, ห้ามรับประทานพร้อมนม"
+                      value={newMedForm.notes}
+                      onChange={(e) => setNewMedForm({ ...newMedForm, notes: e.target.value })}
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder-slate-400 focus:outline-none focus:border-lime-400 resize-none"
+                    ></textarea>
+                  </div>
+
+                  <div className="flex gap-3 pt-2">
+                    <button 
+                      type="submit"
+                      className="flex-1 py-3 bg-lime-400 hover:bg-lime-500 text-slate-950 font-black text-xs rounded-xl shadow-lg transition-all"
+                    >
+                      {editingMed ? 'บันทึกการแก้ไข' : 'ยืนยันเพิ่มยาลงตารางเตือน'}
+                    </button>
+                    <button 
+                      type="button"
+                      onClick={() => setIsAddModalOpen(false)}
+                      className="px-5 py-3 bg-white/10 hover:bg-white/20 text-slate-300 font-bold text-xs rounded-xl transition-all"
+                    >
+                      ยกเลิก
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
+
+          {/* Drug Interaction Checker Widget */}
+          <div className="bg-gradient-to-br from-slate-900 to-indigo-950 rounded-3xl p-6 text-white space-y-4 shadow-xl border border-white/20">
+            <div className="flex items-center gap-2">
+              <Icon name="shieldCheck" className="w-6 h-6 text-lime-400" />
+              <h3 className="text-base font-bold">ระบบ AI ตรวจจับปฏิกิริยาระหว่างยาและอาหารเสริม</h3>
+            </div>
+
+            <p className="text-xs text-slate-300">
+              ตรวจสอบความปลอดภัยก่อนทานยาหลายชนิดหรือจับคู่อาหารเสริมร่วมกับยาประจำตัว
+            </p>
+
+            {/* Selected Drugs Pills */}
+            <div className="flex flex-wrap gap-2">
+              {['Metformin', 'สมุนไพรเซนต์จอห์นเวิร์ต', 'วิตามิน D3', 'แอสไพริน', 'น้ำมันปลา Omega-3'].map((item) => {
+                const isSelected = selectedMedsForCheck.includes(item);
+                return (
+                  <button
+                    key={item}
+                    onClick={() => {
+                      if (isSelected) {
+                        setSelectedMedsForCheck(prev => prev.filter(i => i !== item));
+                      } else {
+                        setSelectedMedsForCheck(prev => [...prev, item]);
+                      }
+                    }}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+                      isSelected 
+                        ? 'bg-lime-400 text-slate-950 shadow-md font-black' 
+                        : 'bg-white/10 text-slate-300 hover:bg-white/20'
+                    }`}
+                  >
+                    <Icon name={isSelected ? "check" : "plus"} className="w-3.5 h-3.5" />
+                    {item}
+                  </button>
+                );
+              })}
+            </div>
+
+            <button 
+              onClick={checkInteractions}
+              className="w-full py-2.5 bg-lime-400 text-slate-950 font-black text-xs rounded-xl transition-all shadow-md hover:bg-lime-500"
+            >
+              กดเพื่อวิเคราะห์อันตรกิริยาของยา (Interaction Check)
+            </button>
+
+            {/* Interaction Results Box */}
+            {interactionResult && (
+              <div className={`p-4 rounded-2xl border text-xs space-y-1 animate-fadeIn ${
+                interactionResult.type === 'warning' 
+                  ? 'bg-amber-500/20 border-amber-500/50 text-amber-200' 
+                  : 'bg-emerald-500/20 border-emerald-500/50 text-emerald-200'
+              }`}>
+                <div className="font-bold flex items-center gap-1.5">
+                  <Icon name="alertTriangle" className="w-4 h-4" />
+                  {interactionResult.title}
+                </div>
+                <div>{interactionResult.msg}</div>
+              </div>
+            )}
+          </div>
+
+          {/* Integrated Health & Supplement Marketplace */}
+          <div className={`rounded-3xl p-6 border transition-all space-y-4 ${
+            isDark ? 'bg-slate-900/90 border-slate-700/80 shadow-2xl' : 'bg-white border-slate-300 shadow-xl'
+          }`}>
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className={`text-base font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>ร้านยา & วิตามินจัดส่งด่วนภายใน 1 ชั่วโมง</h3>
+                <p className="text-xs text-slate-400">สั่งซื้อยาประจำบ้าน วิตามิน และสารอาหารบำรุงตามสรรพคุณโดยเภสัชกรพาร์ทเนอร์</p>
+              </div>
+              <div className="relative p-2.5 bg-white/10 rounded-2xl">
+                <Icon name="shoppingCart" className="w-5 h-5 text-lime-400" />
+                {cartCount > 0 && (
+                  <span className="absolute -top-1.5 -right-1.5 bg-lime-400 text-slate-950 text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center">
+                    {cartCount}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {STATIC_MARKET_PRODUCTS.map((prod, i) => (
+                <div 
+                  key={i} 
+                  className={`p-5 rounded-3xl border flex flex-col justify-between space-y-4 group transition-all ${
+                    isDark 
+                      ? 'bg-slate-800/80 border-slate-700 hover:border-lime-400 hover:shadow-xl' 
+                      : 'bg-slate-50 border-slate-300 hover:border-indigo-400 hover:shadow-lg'
+                  }`}
+                >
+                  <div className="space-y-2.5">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-black text-slate-950 bg-lime-400 px-2.5 py-0.5 rounded-full">
+                        {prod.tag}
+                      </span>
+                      <span className="text-xs font-bold text-emerald-400 flex items-center gap-1">
+                        <Icon name="zap" className="w-3 h-3 text-emerald-400" /> จัดส่งใน 1 ชม.
+                      </span>
+                    </div>
+
+                    <div>
+                      <h4 className={`text-sm font-extrabold group-hover:text-lime-400 transition-colors leading-snug ${isDark ? 'text-white' : 'text-slate-900'}`}>{prod.name}</h4>
+                      <p className={`text-[11px] font-semibold mt-0.5 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>{prod.detail}</p>
+                    </div>
+
+                    <div className={`p-3 rounded-2xl border text-xs space-y-1 ${
+                      isDark ? 'bg-slate-950/70 border-slate-700' : 'bg-white border-slate-200'
+                    }`}>
+                      <div className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 flex items-center gap-1">
+                        <Icon name="shieldCheck" className="w-3.5 h-3.5 text-lime-400" /> สรรพคุณทางยา & การออกฤทธิ์:
+                      </div>
+                      <p className={`text-[11px] leading-relaxed font-medium ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>
+                        {prod.properties}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="pt-2 border-t border-slate-700/50 flex flex-col space-y-2">
+                    <div className="text-lg font-black text-lime-400">{prod.price}</div>
+                    <button 
+                      onClick={() => handleAddToCart(prod.name)}
+                      className="w-full py-2.5 bg-lime-400 hover:bg-lime-500 text-slate-950 text-xs font-black rounded-xl transition-all shadow-md flex items-center justify-center gap-1.5"
+                    >
+                      <Icon name="shoppingCart" className="w-3.5 h-3.5" /> สั่งซื้อส่งด่วนถึงบ้าน (1 ชม.)
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // ==========================================
+    // 6. TELEMEDICINE & DOCTOR APPOINTMENT VIEW (Redesigned as Right Screen in Image)
+    // ==========================================
+    function TelemedicineView({ theme, showToast }) {
+      const isDark = theme === 'dark';
+      const [messages, setMessages] = useState([
+        { sender: 'ai', text: 'สวัสดีครับคุณศิรินทร์ ผมคือระบบคัดกรองอาการเบื้องต้น Aura AI ปัจจุบันคุณมีอาการไม่สบายหรือต้องการปรึกษาแพทย์เฉพาะทางด้านใดครับ?' }
+      ]);
+      const [input, setInput] = useState('');
+      const [appointmentModal, setAppointmentModal] = useState(false);
+      const [appointmentType, setAppointmentType] = useState('visit'); // 'visit' | 'virtual'
+      const [activeDate, setActiveDate] = useState('14 Tue');
+      const [activeTime, setActiveTime] = useState('13:00');
+
+      const handleSend = () => {
+        if (!input.trim()) return;
+        const text = input;
+        setMessages(prev => [...prev, { sender: 'user', text }]);
+        setInput('');
+
+        setTimeout(() => {
+          setMessages(prev => [
+            ...prev,
+            { sender: 'ai', text: 'ประเมินจากอาการที่ระบุ จัดอยู่ในกลุ่มสีเขียว (ความรุนแรงต่ำ) หากต้องการนัดหมายแพทย์เฉพาะทาง คุณสามารถกดปุ่ม "Make an Appointment" กับ พญ. เอมิลี่ ปีเตอร์สัน ได้ทันทีครับ' }
+          ]);
+        }, 600);
+      };
+
+      return (
+        <div className="space-y-6 animate-fadeIn">
+          
+          {/* Main Appointment Hero Card (Right Screen in Image) */}
+          <div className="bg-gradient-to-b from-[#2B47FC] via-[#3730A3] to-[#1E1B4B] rounded-3xl p-6 text-white shadow-2xl border border-white/20 relative space-y-6">
+            
+            {/* Top Navigation */}
+            <div className="flex items-center justify-between">
+              <button className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center">
+                <Icon name="chevronLeft" className="w-4 h-4" />
+              </button>
+              <span className="text-xs font-bold italic tracking-wide text-indigo-100">Make an Appointment</span>
+              <button className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center text-rose-400">
+                <Icon name="heart" className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Doctor Profile Banner */}
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <span className="text-xs font-medium text-indigo-200">Cardiologist</span>
+                <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight mt-0.5">
+                  Emily<br />Peterson
+                </h2>
+                <div className="flex items-center gap-1.5 mt-2">
+                  <span className="w-2 h-2 rounded-full bg-lime-400 animate-pulse"></span>
+                  <span className="text-xs text-lime-400 font-bold">Online</span>
+                </div>
+              </div>
+
+              <div className="relative">
+                <img 
+                  src="https://images.unsplash.com/photo-1594824813583-36c1e57c6b90?auto=format&fit=crop&q=80&w=260" 
+                  alt="Dr Emily Peterson" 
+                  className="w-32 h-32 sm:w-36 sm:h-36 rounded-3xl object-cover border-2 border-white/30 shadow-2xl"
+                />
+              </div>
+            </div>
+
+            {/* Doctor Stats Strip */}
+            <div className="flex items-center justify-between p-3 rounded-2xl bg-white/10 backdrop-blur-md text-xs font-semibold">
+              <div className="flex items-center gap-1.5">
+                <Icon name="calendar" className="w-4 h-4 text-indigo-300" />
+                <span>Book</span>
+              </div>
+              <div className="flex items-center gap-1 text-amber-300">
+                <span>⭐</span>
+                <span>4.8</span>
+              </div>
+              <div className="flex items-center gap-1 text-lime-400">
+                <span>💰</span>
+                <span>$25</span>
+              </div>
+              <div className="text-indigo-200">+30 reviews</div>
+            </div>
+
+            {/* Appointment Booking Panel (White Card as in image) */}
+            <div className="bg-white text-slate-900 rounded-3xl p-5 shadow-xl space-y-4">
+              
+              {/* Visit vs Virtual Toggle */}
+              <div className="grid grid-cols-2 gap-2">
+                <button 
+                  onClick={() => setAppointmentType('visit')}
+                  className={`py-2.5 px-4 rounded-2xl text-xs font-bold flex items-center justify-center gap-2 transition-all ${
+                    appointmentType === 'visit' 
+                      ? 'bg-slate-900 text-white shadow-md' 
+                      : 'bg-slate-100 text-slate-600'
+                  }`}
+                >
+                  <Icon name="calendar" className="w-4 h-4" />
+                  <span>Visit</span>
+                </button>
+                <button 
+                  onClick={() => setAppointmentType('virtual')}
+                  className={`py-2.5 px-4 rounded-2xl text-xs font-bold flex items-center justify-center gap-2 transition-all ${
+                    appointmentType === 'virtual' 
+                      ? 'bg-slate-900 text-white shadow-md' 
+                      : 'bg-slate-100 text-slate-600'
+                  }`}
+                >
+                  <Icon name="camera" className="w-4 h-4" />
+                  <span>Virtual</span>
+                </button>
+              </div>
+
+              {/* Day Pills (12 Sun, 13 Mon, 14 Tue, 15 Wed) */}
+              <div className="flex items-center justify-between gap-1 overflow-x-auto text-xs">
+                {['12 Sun', '13 Mon', '14 Tue', '15 Wed', '16 Thu'].map(d => (
+                  <button
+                    key={d}
+                    onClick={() => setActiveDate(d)}
+                    className={`py-2 px-3 rounded-xl font-bold whitespace-nowrap transition-all ${
+                      activeDate === d 
+                        ? 'bg-lime-400 text-slate-950 shadow-md scale-105' 
+                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                    }`}
+                  >
+                    {d}
+                  </button>
+                ))}
+              </div>
+
+              {/* Time Slots (10:00, 11:00, 12:00, 13:00 Neon Active, 14:00) */}
+              <div className="flex items-center justify-between gap-1 overflow-x-auto text-xs">
+                {['10:00', '11:00', '12:00', '13:00', '14:00'].map(t => (
+                  <button
+                    key={t}
+                    onClick={() => setActiveTime(t)}
+                    className={`py-2 px-3 rounded-xl font-bold whitespace-nowrap transition-all ${
+                      activeTime === t 
+                        ? 'bg-lime-400 text-slate-950 shadow-md scale-105' 
+                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                    }`}
+                  >
+                    {t}
+                  </button>
+                ))}
+              </div>
+
+              {/* Main Action Appointment Pill */}
+              <button 
+                onClick={() => showToast(`นัดหมายแพทย์สำเร็จ: ${activeDate} เวลา ${activeTime} น. 🩺`)}
+                className="w-full py-3.5 px-6 rounded-full bg-slate-900 text-white font-black text-xs shadow-xl flex items-center justify-between gap-4 hover:bg-slate-800 transition-all"
+              >
+                <span className="w-6 h-6 rounded-full bg-white text-slate-900 flex items-center justify-center">
+                  <Icon name="check" className="w-3.5 h-3.5 stroke-[3]" />
+                </span>
+                <span className="tracking-wide">Appointment</span>
+                <span className="text-lime-400 font-extrabold">›››</span>
+              </button>
+
+            </div>
+
+          </div>
+
+          {/* AI Clinical Symptom Chat Assistant */}
+          <div className={`p-6 rounded-3xl ${isDark ? 'glass-card-dark' : 'glass-card-light'} space-y-4`}>
+            <div className="flex items-center gap-2 border-b border-white/10 pb-3">
+              <span className="w-2.5 h-2.5 rounded-full bg-lime-400 animate-pulse"></span>
+              <h3 className="text-sm font-bold text-white dark:text-white">
+                <span className={isDark ? 'text-white' : 'text-slate-900'}>Aura Clinical AI Symptom Checker</span>
+              </h3>
+            </div>
+
+            <div className="space-y-3 max-h-48 overflow-y-auto pr-1">
+              {messages.map((m, i) => (
+                <div key={i} className={`flex ${m.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
+                  <div className={`max-w-[85%] p-3.5 rounded-2xl text-xs ${
+                    m.sender === 'user' 
+                      ? 'bg-lime-400 text-slate-950 font-bold' 
+                      : 'bg-white/10 text-white'
+                  }`}>
+                    {m.text}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="flex gap-2 pt-2 border-t border-white/10">
+              <input 
+                type="text" 
+                placeholder="พิมพ์อธิบายอาการของคุณที่นี่..."
+                value={input}
+                onChange={e => setInput(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && handleSend()}
+                className="flex-1 text-xs px-4 py-2.5 rounded-2xl bg-white/10 border border-white/15 text-white placeholder-slate-400 focus:outline-none focus:border-lime-400"
+              />
+              <button 
+                onClick={handleSend}
+                className="px-4 py-2.5 rounded-2xl bg-lime-400 hover:bg-lime-500 text-slate-950 text-xs font-bold transition-all"
+              >
+                <Icon name="send" className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+
+        </div>
+      );
+    }
+
+    // --- React 18 Resilient Mounting ---
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
